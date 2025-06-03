@@ -1,0 +1,60 @@
+.progressContainer {
+  display: flex;
+  width: 100%;
+  max-width: 742px;
+  align-items: center;
+  gap: 10px;
+  margin-top: 48px;
+  padding: 0 46px;
+  height: 9px;
+}
+
+.progressSegment {
+  display: flex;
+  height: 9px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  border-radius: 5px;
+}
+
+.progressSegmentActive {
+  background: linear-gradient(90deg, #26380c 0%, #77b521 100%);
+}
+
+.progressSegmentInactive {
+  background-color: #cecece;
+}
+
+/* iPad Air and tablet styles */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .progressContainer {
+    padding: 0 32px;
+    margin-top: 56px;
+    height: 10px;
+  }
+
+  .progressSegment {
+    height: 10px;
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 769px) {
+  .progressContainer {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 641px) {
+  .progressContainer {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .progressContainer {
+    padding: 0 16px;
+  }
+}

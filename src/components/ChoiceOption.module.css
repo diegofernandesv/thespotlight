@@ -1,0 +1,58 @@
+.choiceOption {
+  width: 100%;
+  color: #2c3638;
+  font-family:
+    "Neue Montreal",
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 150%;
+  min-height: 78px;
+  padding: 23px 34px;
+  gap: 10px;
+  border-radius: 32px;
+  border: 2px solid #019167;
+  background-color: #fefefe;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+
+/* ✅ Active/Selected state */
+.active {
+  background: linear-gradient(90deg, #024D36 0%, #6A9E23 100%);
+  color: #ffffff;
+  border: none;
+}
+
+/* ✅ Tablet: iPad Air and similar */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .choiceOption {
+    font-size: 21px;
+    padding: 26px 36px;
+    min-height: 84px;
+    border-radius: 34px;
+    border-width: 2.5px;
+  }
+}
+
+/* ✅ Small Tablets / Large Phones */
+@media (max-width: 768px) and (min-width: 641px) {
+  .choiceOption {
+    font-size: 19px;
+    padding: 21px 30px;
+    min-height: 80px;
+    border-radius: 30px;
+  }
+}
+
+/* ✅ Phones */
+@media (max-width: 640px) {
+  .choiceOption {
+    font-size: 18px;
+    padding: 18px 24px;
+  }
+}

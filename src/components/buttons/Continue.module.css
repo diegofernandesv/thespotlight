@@ -1,0 +1,26 @@
+.continueButton {
+display: flex;
+padding: 10.174px 16.957px;
+justify-content: center;
+align-items: center;
+gap: 10.174px;
+border-radius: var(--Border-Radius-L, 20px);
+background: linear-gradient(270deg, #014C36 0%, #6A9E22 100%);
+}
+
+.continueButton:hover {
+  opacity: 0.9;
+}
+
+.continueButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(1, 76, 54, 0.3);
+}
+
+.continueButtonText {
+  color: #fff;
+  font-family: "Neue Montreal", -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 150%;
+}
