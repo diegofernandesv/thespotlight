@@ -249,6 +249,13 @@ body {
   font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
 }
 
+.backgroundImage{
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 640px) {
   .mainContent,
   .ticketEntryContainer {
