@@ -1,12 +1,12 @@
 .continueButton {
-all:unset;
-display: flex;
-padding: 10.174px 16.957px;
-justify-content: center;
-align-items: center;
-gap: 10.174px;
-border-radius: var(--Border-Radius-L, 20px);
-background: linear-gradient(270deg, #014C36 0%, #6A9E22 100%);
+  all:unset;
+  display: flex;
+  padding: 10.174px 16.957px;
+  justify-content: center;
+  align-items: center;
+  gap: 10.174px;
+  border-radius: var(--Border-Radius-L, 20px);
+  background: linear-gradient(270deg, #014C36 0%, #6A9E22 100%);
 }
 
 .continueButton:hover {
