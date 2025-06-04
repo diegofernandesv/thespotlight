@@ -32,7 +32,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 656px;
+  min-height: 656px;
 }
 
 .contentWrapper {
@@ -77,8 +77,9 @@
 .backgroundImage{
   width: 100%;
   height: auto;
-  position: relative;
+  position: fixed;
   z-index: 1;
+  bottom:0;
 }
 
 .footerOverlay {
@@ -118,6 +119,10 @@
 .navigationContainer button:hover {
   opacity: 0.8;
   background: none;
+}
+
+.continueButton {
+  z-index: 3;
 }
 
 .audioButton {

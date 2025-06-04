@@ -66,7 +66,12 @@ const MultiChoiceQuestion = ({
               </ChoiceOption>
             ))}
           </div>
-            <Continue onClick={onContinue} />
+          <div className={styles.continueButton}>
+            <Continue
+              onClick={handleContinue}
+              disabled={!selectedChoice}
+            />
+          </div>
         </div>
       </div>
 
