@@ -1,7 +1,7 @@
 const MainScreen = () => {
     return (
         <>
-        
+        hello
         </>
     );
 }
