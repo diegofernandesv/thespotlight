@@ -1,6 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import MultiChoiceQuestion from "../components/MultiChoiceQuestion";
 import FactPage from "../components/FactPage";
+import { saveAnswers, updateExhibitionId } from "../supabaseClient";
+
 
 const questions = [
   {
@@ -17,52 +19,41 @@ const questions = [
   {
     question: "What's more important: protecting bees or ensuring high crop yields and stable food prices?",
     choices: ["Protecting bees", "Productivity"],
-    fact: "Bees and other pollinators are essential for 75% of global food crops, including fruits, vegetables, nuts, and coffee. Without them, yields drop, prices rise, and food diversity decline, threatening ecosystems, farmers’ livelihoods, and global food security.",
+    fact: "Bees and other pollinators are essential for 75% of global food crops...",
     storyTitle: "Our Nature",
   },
   {
     question: "Your country bans plastic straws and builds wind turbines. But in other places, like India, pollution is rising fast. Does making all this effort still feel meaningful to you?",
     choices: [
       "Yes — progress has to start somewhere.",
-      "No — it feels like we’re fixing a leak in a sinking ship",
+      "No — it feels like we're fixing a leak in a sinking ship",
     ],
-    fact: "Denmark cut emissions by 40% since 1990 and now gets over 50% of electricity from wind. Artificial lights are causing birds and insects to disappear.Your street is brightly lit for safety and comfort.Would you vote to make your neighborhood darker?India’s total emissions rise, but per person they emit 75% less than Denmark. Wealthy countries still lead in per-capita impact",
+    fact: "Denmark cut emissions by 40% since 1990...",
     storyTitle: "Our Nature",
   },
   {
-    question: "Artificial lights are causing birds and insects to disappear.Your street is brightly lit for safety and comfort.Would you vote to make your neighborhood darker?",
-    choices: [
-      "Yes",
-      "No ",
-    ],
-    fact: "Artificial light at night disrupts migration, feeding, and reproduction in birds, insects, and bats. Insects attracted to lights die in large numbers. Studies show street lighting contributes to biodiversity loss — but reducing it can raise safety concerns.",
+    question: "Artificial lights are causing birds and insects to disappear. Your street is brightly lit for safety and comfort. Would you vote to make your neighborhood darker?",
+    choices: ["Yes", "No"],
+    fact: "Artificial light at night disrupts migration, feeding...",
     storyTitle: "Our Nature",
   },
   {
-    question: "A new highway promises faster travel across Jutland — but it threatens a rare hedgehog habitat. Would you still support it? ",
-    choices: [
-      "Reroute the highway",
-      "Cancel it",
-      "Built it anyway",
-
-    ],
-    fact: "European hedgehog populations have dropped by up to 70% in some regions over 20 years. Roads are a key factor — not just due to roadkill, but because they split up habitats, isolate populations, and block access to food and mates.",
+    question: "A new highway promises faster travel across Jutland — but it threatens a rare hedgehog habitat. Would you still support it?",
+    choices: ["Reroute the highway", "Cancel it", "Build it anyway"],
+    fact: "European hedgehog populations have dropped by up to 70%...",
     storyTitle: "Our Nature",
   },
   {
-    question: "To reduce carbon emissions, Denmark covers large open areas with wind turbines — but this drives away rare birds and disrupts their migration.Would you rather :",
-    choices: [
-      "Prioritize clean energy",
-      "Protect untouched bird habitats",
-    ],
-    fact: "Wind power supplies over 50% of Denmark’s electricity. However, studies show that turbines can displace bird species like the sea eagle and reduce breeding success near wind farms. Placement and design play a key role in reducing impacts.",
+    question: "To reduce carbon emissions, Denmark covers large open areas with wind turbines — but this drives away rare birds and disrupts their migration. Would you rather:",
+    choices: ["Prioritize clean energy", "Protect untouched bird habitats"],
+    fact: "Wind power supplies over 50% of Denmark's electricity...",
     storyTitle: "Our Nature",
   },
 ];
 
 const totalSteps = questions.length * 2;
 
-const QuestionView = () => {
+const QuestionView = ({ ticket }) => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState([]);
   const containerRef = useRef(null);
@@ -70,6 +61,29 @@ const QuestionView = () => {
   const isFactStep = step % 2 === 1;
   const questionIndex = Math.floor(step / 2);
   const progressStep = questionIndex + 1;
+
+  // ✅ Update exhibition ID to "Our Nature" on mount
+  useEffect(() => {
+    const updateExhibition = async () => {
+      if (!ticket) return;
+
+      const ticketNumber = typeof ticket === 'string' ? parseInt(ticket, 10) : ticket;
+      const exhibition_id = "Our Nature";
+
+      if (isNaN(ticketNumber)) {
+        console.warn("⚠️ Invalid ticket number:", ticket);
+        return;
+      }
+
+      console.log("🧪 Trying to update ticket:", ticketNumber, "with exhibition_id:", exhibition_id);
+      const success = await updateExhibitionId(ticketNumber, exhibition_id);
+      if (!success) {
+        console.warn("⚠️ Could not update exhibition_id in Supabase.");
+      }
+    };
+
+    updateExhibition();
+  }, [ticket]);
 
   const animateAndSetStep = (nextStep) => {
     setStep(nextStep);
@@ -83,10 +97,11 @@ const QuestionView = () => {
     console.log("🎧 Playing story audio...");
   };
 
-  const handleContinue = (selectedChoice) => {
+  const handleContinue = async (selectedChoice) => {
+    let updatedAnswers = answers;
     if (!isFactStep) {
       if (selectedChoice === undefined || selectedChoice === null) return;
-      const updatedAnswers = [...answers];
+      updatedAnswers = [...answers];
       updatedAnswers[questionIndex] = selectedChoice;
       setAnswers(updatedAnswers);
     }
@@ -94,8 +109,31 @@ const QuestionView = () => {
     if (step < totalSteps - 1) {
       animateAndSetStep(step + 1);
     } else {
-      console.log("Quiz completed!", answers);
-      alert("Thanks for completing the questions!");
+      const exhibition_id = questions[0]?.storyTitle || "Unknown";
+
+      if (ticket) {
+        const ticketNumber = typeof ticket === 'string' ? parseInt(ticket, 10) : ticket;
+        if (isNaN(ticketNumber)) {
+          alert("Error: Invalid ticket number");
+          return;
+        }
+
+        const answersObject = {};
+        questions.forEach((q, idx) => {
+          answersObject[`Q${idx + 1}`] = updatedAnswers[idx] ?? null;
+        });
+
+        const success = await saveAnswers(ticketNumber, exhibition_id, answersObject);
+        if (success) {
+          alert("Thanks for completing the questions! Your answers have been saved.");
+        } else {
+          alert("There was an error saving your answers. Please try again.");
+          return;
+        }
+      } else {
+        alert("No ticket number provided. Answers not saved.");
+      }
+
       animateAndSetStep(step + 1);
     }
   };
@@ -112,7 +150,7 @@ const QuestionView = () => {
           fontSize: 24,
         }}
       >
-        🎉 You’ve completed the questions!
+        🎉 You've completed the questions!
       </div>
     );
   }

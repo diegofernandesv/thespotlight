@@ -7,13 +7,13 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 // Initialize Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Type for answers object (can be adjusted to your structure)
+// Type for answers object
 type Answers = Record<string, any>;
 
 /**
- * Inserts a new ticket with answers into the 'tickets' table.
+ * Inserts a new ticket with answers into the 'ticket_table'.
  * @param ticket_number - Unique 4-digit ticket number as a number.
- * @param exhibition_id - ID of the exhibition.
+ * @param exhibition_id - ID of the exhibition (e.g., "Our Nature").
  * @param answers - Object containing quiz answers.
  * @returns true if successful, false otherwise.
  */
@@ -22,27 +22,28 @@ export async function saveAnswers(
   exhibition_id: string,
   answers: Answers
 ): Promise<boolean> {
-  if (!ticket_number || !answers) {
-    console.warn("Missing ticket number or answers.");
+  if (!ticket_number || !answers || !exhibition_id) {
+    console.warn("Missing required fields.");
     return false;
   }
 
-  const { data, error } = await supabase
-    .from('ticket_table') // Use the correct table name here
-    .insert([
-      {
-        ticket_number,
-        exhibition_id: exhibition_id.trim(),
-        answers,
-      }
-    ]);
+  const payload = {
+    ticket_number: ticket_number, // Keep as number, no .trim()
+    exhibition_id: exhibition_id.trim(),
+    answers,
+    created_at: new Date().toISOString(),
+  };
+
+  console.log("Saving to Supabase:", payload);
+
+  const { data, error } = await supabase.from("ticket_table").insert([payload]);
 
   if (error) {
-    console.error("Failed to save answers:", error.message);
+    console.error("Error inserting ticket:", error);
     return false;
   }
 
-  console.log("Ticket saved:", data);
+  console.log("Inserted ticket:", data);
   return true;
 }
 
@@ -59,10 +60,12 @@ export async function getAnswersByTicketNumber(
     return null;
   }
 
+  console.log("Searching for ticket:", ticket_number, typeof ticket_number);
+
   const { data, error } = await supabase
-    .from('ticket_table')
-    .select('answers')
-    .eq('ticket_number', ticket_number)
+    .from("ticket_table")
+    .select("answers")
+    .eq("ticket_number", ticket_number)
     .single();
 
   if (error) {
@@ -70,5 +73,63 @@ export async function getAnswersByTicketNumber(
     return null;
   }
 
+  console.log("Found ticket data:", data);
   return data?.answers ?? null;
+}
+
+/**
+ * Debug function to see all tickets in the database
+ */
+export async function getAllTickets() {
+  const { data, error } = await supabase.from("ticket_table").select("*");
+  
+  if (error) {
+    console.error("Error fetching all tickets:", error);
+    return null;
+  }
+  
+  console.log("All tickets in database:", data);
+  return data;
+}
+
+/**
+ * Test function to verify Supabase connection
+ */
+export async function testConnection(): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('ticket_table')
+      .select('count', { count: 'exact', head: true });
+    
+    if (error) {
+      console.error("Connection test failed:", error);
+      return false;
+    }
+    
+    console.log("Connection successful, table exists");
+    return true;
+  } catch (err) {
+    console.error("Connection error:", err);
+    return false;
+  }
+}
+
+export async function updateExhibitionId(
+  ticket_number: number,
+  exhibition_id: string
+): Promise<boolean> {
+  console.log("🔍 Updating Supabase with:", { ticket_number, exhibition_id });
+
+  const { data, error } = await supabase
+    .from("ticket_table")
+    .update({ exhibition_id })
+    .eq("ticket_number", ticket_number);
+
+  if (error) {
+    console.error("❌ Supabase update error:", error);
+    return false;
+  }
+
+  console.log("✅ Supabase update result:", data);
+  return true;
 }
