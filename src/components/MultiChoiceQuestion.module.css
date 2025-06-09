@@ -73,6 +73,11 @@
   border: 2px linear-gradient(90deg, #6A9E21 0%, #004C36 100%);
 }
 
+.continueButton {
+  display: flex;
+  align-items: left;
+}
+
 
 .backgroundImage{
   width: 100%;
@@ -84,7 +89,7 @@
 
 .footerOverlay {
   position: absolute;
-  bottom: 168px;
+  bottom: 48px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;

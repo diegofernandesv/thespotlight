@@ -1,4 +1,4 @@
-import React from "react";
+
 import BackIcon from "./icons/BackIcon";
 
 const BackButton = ({ onClick }) => {
