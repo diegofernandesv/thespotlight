@@ -3,7 +3,7 @@ import ProgressBar from "./ProgressBar";
 import BackButton from "./BackButton";
 import SoundButton from "./SoundButton";
 import ArrowRightIcon from "./icons/ArrowRightIcon";
-import styles from "./MultiChoiceQuestion.module.css";
+import styles from "../css/MultiChoiceQuestion.module.css";
 import Continue from "./buttons/Continue";
 
 const FactPage = ({
