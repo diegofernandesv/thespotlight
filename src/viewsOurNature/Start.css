@@ -1,0 +1,46 @@
+.start-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Urbanist'
+}
+
+.start-content {
+  margin-top: -20vh;
+  margin-left: 6vw;
+  z-index: 2;
+  text-align: left;
+}
+
+.start-step-text {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 0.01em;
+  color: #111;
+}
+
+.start-title {
+  font-size: 4rem;
+  font-weight: bold;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.01em;
+  color: #111;
+}
+
+.start-bg-img {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 38vh;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+}

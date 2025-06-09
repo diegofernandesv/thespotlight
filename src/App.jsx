@@ -1,20 +1,13 @@
-import "./App.css";
-import TicketEntry from "./views/TicketEntry";
-import QuestionView from "./views/QuestionView";
-import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import OurNature from "./pages/OurNature";
 
 function App() {
-  const [ticket, setTicket] = useState(null);
-
   return (
-    <>
-      {!ticket ? (
-        <TicketEntry onSubmit={setTicket} />
-      ) : (
-        <QuestionView ticket={ticket} />
-      )}
-    </>
+    <Router>
+      <Routes>
+        <Route path="/*" element={<OurNature />} />
+      </Routes>
+    </Router>
   );
 }
-
 export default App;
