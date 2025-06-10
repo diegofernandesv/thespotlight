@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import MultiChoiceQuestion from "../components/MultiChoiceQuestion";
 import FactPage from "../components/FactPage";
 import { saveAnswers, updateExhibitionId } from "../supabaseClient";
-
+import { supabase } from "../supabaseClient";
 
 const questions = [
   {
@@ -56,38 +56,81 @@ const totalSteps = questions.length * 2;
 const QuestionView = ({ ticket }) => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [saveStatus, setSaveStatus] = useState({ show: false, success: false });
   const containerRef = useRef(null);
 
   const isFactStep = step % 2 === 1;
   const questionIndex = Math.floor(step / 2);
   const progressStep = questionIndex + 1;
 
-  // ✅ Update exhibition ID to "Our Nature" on mount
+  // Add a function to show and auto-hide save status
+  const showSaveStatus = (success) => {
+    setSaveStatus({ show: true, success });
+    setTimeout(() => setSaveStatus({ show: false, success: false }), 2000);
+  };
+
+  // Load existing answers and verify ticket on mount
   useEffect(() => {
-    const updateExhibition = async () => {
-      if (!ticket) return;
+    const initializeQuestions = async () => {
+      try {
+        const ticketNumber = typeof ticket === "string" ? parseInt(ticket, 10) : ticket;
+        
+        if (!ticketNumber || isNaN(ticketNumber)) {
+          throw new Error("Invalid ticket number");
+        }
 
-      const ticketNumber = typeof ticket === 'string' ? parseInt(ticket, 10) : ticket;
-      const exhibition_id = "Our Nature";
+        // First verify the ticket exists and get any existing answers
+        let { data: existingTicket, error: checkError } = await supabase
+          .from("ticket_table")
+          .select("ticket_number, answers, exhibition_id")
+          .eq("ticket_number", ticketNumber)
+          .single();
 
-      if (isNaN(ticketNumber)) {
-        console.warn("⚠️ Invalid ticket number:", ticket);
-        return;
-      }
+        // If ticket doesn't exist, throw an error. Creation should happen before this view.
+        if (checkError || !existingTicket) {
+          console.error("Error fetching ticket:", checkError);
+          throw new Error(
+            "Ticket not found or could not be fetched. Please go back and try again."
+          );
+        }
 
-      console.log("🧪 Trying to update ticket:", ticketNumber, "with exhibition_id:", exhibition_id);
-      const success = await updateExhibitionId(ticketNumber, exhibition_id);
-      if (!success) {
-        console.warn("⚠️ Could not update exhibition_id in Supabase.");
+        // If exhibition_id is different or not set, update it
+        if (existingTicket.exhibition_id !== "Our Nature") {
+          const success = await updateExhibitionId(ticketNumber, "Our Nature");
+          if (!success) {
+            console.warn("Could not update exhibition_id");
+          }
+        }
+
+        // Initialize answers array
+        const existingAnswers = new Array(questions.length).fill(null);
+        
+        // If there are existing answers, convert them to array format
+        if (existingTicket.answers) {
+          for (let i = 0; i < questions.length; i++) {
+            const answer = existingTicket.answers[`Q${i + 1}`]?.answer;
+            if (answer) {
+              existingAnswers[i] = answer;
+            }
+          }
+          console.log("Loaded existing answers:", existingAnswers);
+        }
+
+        setAnswers(existingAnswers);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error initializing questions:", error);
+        setError(error.message);
+        setIsLoading(false);
       }
     };
 
-    updateExhibition();
+    initializeQuestions();
   }, [ticket]);
 
-  const animateAndSetStep = (nextStep) => {
-    setStep(nextStep);
-  };
+  const animateAndSetStep = (nextStep) => setStep(nextStep);
 
   const handleBack = () => {
     if (step > 0) animateAndSetStep(step - 1);
@@ -96,45 +139,96 @@ const QuestionView = ({ ticket }) => {
   const handleSound = () => {
     console.log("🎧 Playing story audio...");
   };
-
   const handleContinue = async (selectedChoice) => {
-    let updatedAnswers = answers;
-    if (!isFactStep) {
-      if (selectedChoice === undefined || selectedChoice === null) return;
-      updatedAnswers = [...answers];
-      updatedAnswers[questionIndex] = selectedChoice;
-      setAnswers(updatedAnswers);
-    }
-
-    if (step < totalSteps - 1) {
-      animateAndSetStep(step + 1);
-    } else {
-      const exhibition_id = questions[0]?.storyTitle || "Unknown";
-
-      if (ticket) {
-        const ticketNumber = typeof ticket === 'string' ? parseInt(ticket, 10) : ticket;
-        if (isNaN(ticketNumber)) {
-          alert("Error: Invalid ticket number");
-          return;
+    if (!isFactStep && selectedChoice) {
+      try {
+        const ticketNumber = typeof ticket === "string" ? parseInt(ticket, 10) : ticket;
+        
+        if (!ticketNumber || isNaN(ticketNumber)) {
+          throw new Error("Invalid ticket number");
         }
 
-        const answersObject = {};
-        questions.forEach((q, idx) => {
-          answersObject[`Q${idx + 1}`] = updatedAnswers[idx] ?? null;
+        // Update local state first
+        const updatedAnswers = [...answers];
+        updatedAnswers[questionIndex] = selectedChoice;
+        setAnswers(updatedAnswers);
+
+        // Format answer with the correct structure
+        const answerObj = {
+          [`Q${questionIndex + 1}`]: {
+            question: questions[questionIndex].question,
+            answer: selectedChoice,
+            timestamp: new Date().toISOString()
+          }
+        };
+
+        console.log("Saving answer:", {
+          ticketNumber,
+          questionIndex,
+          answer: answerObj
         });
 
-        const success = await saveAnswers(ticketNumber, exhibition_id, answersObject);
-        if (success) {
-          alert("Thanks for completing the questions! Your answers have been saved.");
-        } else {
-          alert("There was an error saving your answers. Please try again.");
-          return;
+        const success = await saveAnswers(ticketNumber, "Our Nature", answerObj);
+        
+        if (!success) {
+          throw new Error("Failed to save answer");
         }
-      } else {
-        alert("No ticket number provided. Answers not saved.");
+        
+        // Show success status
+        showSaveStatus(true);
+        
+        // Move to next step only if save was successful
+        if (step < totalSteps - 1) {
+          animateAndSetStep(step + 1);
+        }
+      } catch (error) {
+        console.error("Error saving answer:", error);
+        showSaveStatus(false);
+        setError(error.message);
       }
-
+    } else if (step < totalSteps - 1) {
+      // For fact steps, just move to next step
       animateAndSetStep(step + 1);
+    } else {
+      try {
+        const ticketNumber = typeof ticket === "string" ? parseInt(ticket, 10) : ticket;
+
+        if (!ticketNumber || isNaN(ticketNumber)) {
+          throw new Error("Invalid ticket number");
+        }
+
+        console.log("Preparing to save final answers:", {
+          ticketNumber,
+          exhibition_id: "Our Nature"
+        });
+
+        // Create an object with all answers
+        const finalAnswers = {};
+        
+        questions.forEach((q, idx) => {
+          if (answers[idx] !== null) {
+            finalAnswers[`Q${idx + 1}`] = {
+              question: q.question,
+              answer: answers[idx],
+              timestamp: new Date().toISOString()
+            };
+          }
+        });
+
+        // Save all answers at once
+        const success = await saveAnswers(ticketNumber, "Our Nature", finalAnswers);
+        
+        if (success) {
+          console.log("✅ Successfully saved all answers!");
+          showSaveStatus(true);
+          animateAndSetStep(step + 1);
+        } else {
+          throw new Error("Failed to save final answers");
+        }
+      } catch (error) {
+        console.error("Error during final save:", error);
+        showSaveStatus(false);
+      }
     }
   };
 
@@ -155,6 +249,14 @@ const QuestionView = ({ ticket }) => {
     );
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div ref={containerRef} style={{ width: "100%" }}>
       {isFactStep ? (
@@ -167,7 +269,7 @@ const QuestionView = ({ ticket }) => {
           onContinue={() =>
             step < totalSteps - 1
               ? animateAndSetStep(step + 1)
-              : alert("Thank you for completing the questions!")
+              : alert("Thanks again!")
           }
           storyTitle={questions[questionIndex].storyTitle}
           stepIndicator={`${progressStep}/${questions.length}`}
@@ -184,6 +286,24 @@ const QuestionView = ({ ticket }) => {
           storyTitle={questions[questionIndex].storyTitle}
           stepIndicator={`${progressStep}/${questions.length}`}
         />
+      )}
+      {saveStatus.show && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            backgroundColor: saveStatus.success ? "#4caf50" : "#f44336",
+            color: "white",
+            zIndex: 1000,
+            transition: "opacity 0.3s ease",
+          }}
+        >
+          {saveStatus.success ? "Answer saved!" : "Failed to save answer"}
+        </div>
       )}
     </div>
   );

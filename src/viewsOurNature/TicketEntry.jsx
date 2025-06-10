@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import BackButton from "../components/BackButton";
 import ProgressBar from "../components/ProgressBar";
 import SoundButton from "../components/SoundButton";
-import ChoiceOption from "../components/ChoiceOption";
 import Continue from "../components/buttons/Continue";
 import styles from "./TicketEntry.module.css";
 import ticketgreen from "../assets/ticketgreen.png";
@@ -37,14 +36,17 @@ const TicketEntry = ({
     setLoading(true);
     setError("");
 
-    // Optional: check if ticket already exists
+    const ticketNumberAsInt = parseInt(trimmed, 10);
+
+    // Check if ticket exists
     const { data: existing, error: fetchError } = await supabase
       .from("ticket_table")
       .select("ticket_number")
-      .eq("ticket_number", trimmed)
+      .eq("ticket_number", ticketNumberAsInt)
       .maybeSingle();
 
     if (fetchError) {
+      console.error("Error checking ticket:", fetchError);
       setError("Something went wrong. Please try again.");
       setLoading(false);
       return;
@@ -56,18 +58,30 @@ const TicketEntry = ({
       return;
     }
 
+    // Initialize answers with proper structure
+    const initialAnswers = null;
+  
+
+    // Insert new ticket
     const { error: insertError } = await supabase
       .from("ticket_table")
-      .insert([{ ticket_number: trimmed }]);
+      .insert([{ 
+        ticket_number: ticketNumberAsInt,
+        exhibition_id: "Our Nature",
+        answers: initialAnswers
+      }]);
 
     if (insertError) {
+      console.error("Error creating ticket:", insertError);
       setError("Failed to save ticket. Please try again.");
       setLoading(false);
       return;
     }
 
+    console.log("✅ Successfully created ticket:", ticketNumberAsInt);
+
     if (onSubmit) {
-      onSubmit(trimmed);
+      onSubmit(ticketNumberAsInt);
     }
 
     setLoading(false);
@@ -98,6 +112,8 @@ const TicketEntry = ({
             onChange={(e) => setTicketNumber(e.target.value)}
             placeholder="Example: 2145"
             className={styles.ticketInput}
+            maxLength={4}
+            inputMode="numeric"
           />
           {error && <div className={styles.error}>{error}</div>}
           <Continue

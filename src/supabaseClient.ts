@@ -1,4 +1,15 @@
+/// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js';
+
+// Add type declaration for Vite's import.meta.env
+interface ImportMetaEnv {
+  VITE_SUPABASE_URL: string;
+  VITE_SUPABASE_ANON_KEY: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
 
 // Supabase environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
@@ -11,7 +22,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 type Answers = Record<string, any>;
 
 /**
- * Inserts a new ticket with answers into the 'ticket_table'.
+ * Updates the answers for an existing ticket in the 'ticket_table'.
  * @param ticket_number - Unique 4-digit ticket number as a number.
  * @param exhibition_id - ID of the exhibition (e.g., "Our Nature").
  * @param answers - Object containing quiz answers.
@@ -27,31 +38,70 @@ export async function saveAnswers(
     return false;
   }
 
-  const payload = {
-    ticket_number: ticket_number, // Keep as number, no .trim()
-    exhibition_id: exhibition_id.trim(),
-    answers,
-    created_at: new Date().toISOString(),
-  };
+  try {
+    // First get the existing answers to merge with new ones
+    const { data: existingData, error: fetchError } = await supabase
+      .from("ticket_table")
+      .select("answers")
+      .eq("ticket_number", ticket_number)
+      .single();
 
-  console.log("Saving to Supabase:", payload);
+    console.log("Fetched existingData:", existingData);
 
-  const { data, error } = await supabase.from("ticket_table").insert([payload]);
+    if (fetchError) {
+      console.error("Error fetching existing answers:", fetchError);
+      return false;
+    }
 
-  if (error) {
-    console.error("Error inserting ticket:", error);
+    // Defensive: ensure currentAnswers is always an object with responses
+    let currentAnswers;
+    if (
+      existingData &&
+      existingData.answers &&
+      typeof existingData.answers === "object" &&
+      existingData.answers.responses &&
+      typeof existingData.answers.responses === "object"
+    ) {
+      currentAnswers = existingData.answers;
+    } else {
+      currentAnswers = { initialized: true, responses: {} };
+    }
+    console.log("currentAnswers:", currentAnswers);
+
+    // Create new merged answers object
+    const mergedAnswers = {
+      initialized: true,
+      responses: {
+        ...currentAnswers.responses, // Keep all existing responses
+        ...answers // answers is a flat object: { Qn: {...} }
+      }
+    };
+
+    console.log("Saving merged answers:", mergedAnswers);
+
+    const { error: updateError } = await supabase
+      .from("ticket_table")
+      .update({
+        answers: mergedAnswers,
+        exhibition_id: exhibition_id.trim()
+      })
+      .eq("ticket_number", ticket_number);
+
+    if (updateError) {
+      console.error("Error updating answers:", updateError);
+      return false;
+    } else {
+      console.log("Successfully updated answers in DB.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Unexpected error in saveAnswers:", error);
     return false;
   }
-
-  console.log("Inserted ticket:", data);
-  return true;
 }
 
-/**
- * Fetches the answers for a given ticket number.
- * @param ticket_number - The ticket number to search (as number).
- * @returns The answers object or null if not found.
- */
+
 export async function getAnswersByTicketNumber(
   ticket_number: number
 ): Promise<Answers | null> {
@@ -118,15 +168,25 @@ export async function updateExhibitionId(
   ticket_number: number,
   exhibition_id: string
 ): Promise<boolean> {
+  if (!ticket_number || !exhibition_id) {
+    console.error("❌ Missing ticket_number or exhibition_id for update", { ticket_number, exhibition_id });
+    return false;
+  }
   console.log("🔍 Updating Supabase with:", { ticket_number, exhibition_id });
 
   const { data, error } = await supabase
     .from("ticket_table")
-    .update({ exhibition_id })
-    .eq("ticket_number", ticket_number);
+    .update({ exhibition_id: exhibition_id.trim() })
+    .eq("ticket_number", ticket_number)
+    .select(); // Get the updated row(s) back
 
   if (error) {
     console.error("❌ Supabase update error:", error);
+    return false;
+  }
+
+  if (!data || data.length === 0) {
+    console.warn("⚠️ No row found to update for ticket_number:", ticket_number);
     return false;
   }
 
