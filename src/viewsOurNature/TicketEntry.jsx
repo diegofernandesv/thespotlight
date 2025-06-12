@@ -6,6 +6,7 @@ import Continue from "../components/buttons/Continue";
 import styles from "./TicketEntry.module.css";
 import ticketgreen from "../assets/ticketgreen.png";
 import { supabase } from "../supabaseClient";
+import { questions } from "./QuestionView";
 
 const TicketEntry = ({
   onSubmit,
@@ -59,7 +60,14 @@ const TicketEntry = ({
     }
 
     // Initialize answers with proper structure
-    const initialAnswers = null;
+    const initialAnswers = {};
+    questions.forEach((q, i) => {
+      initialAnswers[`Q${i + 1}`] = {
+        question: q.question,
+        answer: "",
+        timestamp: null,
+      };
+    });
   
 
     // Insert new ticket

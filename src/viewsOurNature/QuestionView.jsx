@@ -4,7 +4,7 @@ import FactPage from "../components/FactPage";
 import { saveAnswers, updateExhibitionId } from "../supabaseClient";
 import { supabase } from "../supabaseClient";
 
-const questions = [
+export const questions = [
   {
     question: "What stood out to you most in the story you just heard?",
     choices: [
@@ -110,7 +110,8 @@ const QuestionView = ({ ticket }) => {
         // If there are existing answers, convert them to array format
         if (existingTicket.answers) {
           for (let i = 0; i < questions.length; i++) {
-            const answer = existingTicket.answers[`Q${i + 1}`]?.answer;
+            const questionKey = `Q${i + 1}`;
+            const answer = existingTicket.answers[questionKey]?.answer;
             if (answer) {
               existingAnswers[i] = answer;
             }
@@ -139,8 +140,8 @@ const QuestionView = ({ ticket }) => {
   const handleSound = () => {
     console.log("🎧 Playing story audio...");
   };
-  const handleContinue = async (selectedChoice) => {
-    if (!isFactStep && selectedChoice) {
+  const handleContinue = async (answerObj) => {
+    if (!isFactStep) {
       try {
         const ticketNumber = typeof ticket === "string" ? parseInt(ticket, 10) : ticket;
         
@@ -150,32 +151,21 @@ const QuestionView = ({ ticket }) => {
 
         // Update local state first
         const updatedAnswers = [...answers];
-        updatedAnswers[questionIndex] = selectedChoice;
+        updatedAnswers[questionIndex] = answerObj[`Q${questionIndex + 1}`].answer;
         setAnswers(updatedAnswers);
-
-        // Format answer with the correct structure
-        const answerObj = {
-          [`Q${questionIndex + 1}`]: {
-            question: questions[questionIndex].question,
-            answer: selectedChoice,
-            timestamp: new Date().toISOString()
-          }
-        };
-
-        console.log("Saving answer:", {
-          ticketNumber,
-          questionIndex,
-          answer: answerObj
-        });
-
-        const success = await saveAnswers(ticketNumber, "Our Nature", answerObj);
         
-        if (!success) {
-          throw new Error("Failed to save answer");
+        // Build the full answers object
+        const mergedAnswersObj = {};
+        for (let i = 0; i < questions.length; i++) {
+          mergedAnswersObj[`Q${i + 1}`] = {
+            question: questions[i].question,
+            answer: updatedAnswers[i] || "",
+            timestamp: updatedAnswers[i] ? new Date().toISOString() : null,
+          };
         }
         
-        // Show success status
-        showSaveStatus(true);
+        const success = await saveAnswers(ticketNumber, "Our Nature", mergedAnswersObj);
+        
         
         // Move to next step only if save was successful
         if (step < totalSteps - 1) {
@@ -197,25 +187,17 @@ const QuestionView = ({ ticket }) => {
           throw new Error("Invalid ticket number");
         }
 
-        console.log("Preparing to save final answers:", {
-          ticketNumber,
-          exhibition_id: "Our Nature"
-        });
-
-        // Create an object with all answers
+        // Create final answers object with all answers
         const finalAnswers = {};
-        
-        questions.forEach((q, idx) => {
-          if (answers[idx] !== null) {
-            finalAnswers[`Q${idx + 1}`] = {
-              question: q.question,
-              answer: answers[idx],
-              timestamp: new Date().toISOString()
-            };
-          }
-        });
+        for (let i = 0; i < questions.length; i++) {
+          finalAnswers[`Q${i + 1}`] = {
+            question: questions[i].question,
+            answer: answers[i] || "",
+            timestamp: answers[i] ? new Date().toISOString() : null,
+          };
+        }
 
-        // Save all answers at once
+        console.log("Saving final answers:", finalAnswers);
         const success = await saveAnswers(ticketNumber, "Our Nature", finalAnswers);
         
         if (success) {
@@ -282,7 +264,17 @@ const QuestionView = ({ ticket }) => {
           totalSteps={questions.length}
           onBack={handleBack}
           onSound={handleSound}
-          onContinue={handleContinue}
+          onContinue={(selectedChoice) => {
+            const answerObj = {
+              [`Q${questionIndex + 1}`]: {
+                question: questions[questionIndex].question,
+                answer: selectedChoice,
+                timestamp: new Date().toISOString()
+              }
+            };
+            console.log("Sending answer object:", answerObj);
+            handleContinue(answerObj);
+          }}
           storyTitle={questions[questionIndex].storyTitle}
           stepIndicator={`${progressStep}/${questions.length}`}
         />

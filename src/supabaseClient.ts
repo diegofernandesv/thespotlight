@@ -53,28 +53,13 @@ export async function saveAnswers(
       return false;
     }
 
-    // Defensive: ensure currentAnswers is always an object with responses
-    let currentAnswers;
-    if (
-      existingData &&
-      existingData.answers &&
-      typeof existingData.answers === "object" &&
-      existingData.answers.responses &&
-      typeof existingData.answers.responses === "object"
-    ) {
-      currentAnswers = existingData.answers;
-    } else {
-      currentAnswers = { initialized: true, responses: {} };
-    }
-    console.log("currentAnswers:", currentAnswers);
+    // Get existing answers or initialize empty object
+    const existingAnswers = existingData?.answers || {};
 
     // Create new merged answers object
     const mergedAnswers = {
-      initialized: true,
-      responses: {
-        ...currentAnswers.responses, // Keep all existing responses
-        ...answers // answers is a flat object: { Qn: {...} }
-      }
+      ...existingAnswers,
+      ...answers
     };
 
     console.log("Saving merged answers:", mergedAnswers);
