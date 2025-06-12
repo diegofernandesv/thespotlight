@@ -56,11 +56,7 @@ const MultiChoiceQuestion = ({
                 key={index}
                 value={choice}
                 onClick={handleChoiceSelect}
-                className={
-                  selectedChoice === choice
-                    ? `${styles.choiceOption} ${styles.active}`
-                    : styles.choiceOption
-                }
+                isActive={selectedChoice === choice}
               >
                 {choice}
               </ChoiceOption>

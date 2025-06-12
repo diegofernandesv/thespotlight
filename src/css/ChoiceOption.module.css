@@ -14,18 +14,22 @@
   padding: 23px 34px;
   gap: 10px;
   border-radius: 32px;
-  border: 2px solid #019167;
+  border: 2px solid #019167 !important;
   background-color: #fefefe;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
+.choiceOption:hover {
+  border-color: #019167;
+  opacity: 0.9;
+}
 
-/* ✅ Active/Selected state */
-.active {
+.choiceOption.active {
+  border: 2px solid #019167;
   background: linear-gradient(90deg, #024D36 0%, #6A9E23 100%);
-  color: #ffffff;
-  border: none;
+  backdrop-filter: blur(2px);
+  color: #FFFFFF;
 }
 
 /* ✅ Tablet: iPad Air and similar */
@@ -52,7 +56,7 @@
 /* ✅ Phones */
 @media (max-width: 640px) {
   .choiceOption {
-    font-size: 18px;
-    padding: 18px 24px;
+    padding: 20px;
+    font-size: 16px;
   }
 }

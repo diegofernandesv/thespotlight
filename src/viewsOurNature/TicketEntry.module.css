@@ -140,12 +140,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  align-items: center;
+  align-items: flex-end;
+  width: 100%;;
 }
 
 .ticketInput {
   width: 100%;
-  max-width: 380px;
+  max-width: 535px;
   padding: 23px 34px;
   font-size: 20px;
   border-radius: 32px;
