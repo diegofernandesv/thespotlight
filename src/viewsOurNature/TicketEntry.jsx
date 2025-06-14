@@ -124,13 +124,34 @@ const TicketEntry = ({
             inputMode="numeric"
           />
           {error && <div className={styles.error}>{error}</div>}
-          <Continue
-            onClick={handleSubmit}
-            disabled={!ticketNumber || loading}
-            type="submit"
-          >
-            {loading ? "Saving..." : "Continue"}
-          </Continue>
+          <div className={styles.betweenButtons}>
+            <button
+              type="button"
+              className={styles.skipStep}
+              style={{
+                all: "unset",
+                background: "#fff",
+                color: "#019167",
+                fontWeight: 600,
+                borderRadius: "24px",
+                padding: "10px 18px",
+                fontSize: "16px",
+                fontFamily: "Neue Montreal",
+              }}
+              onClick={() => {
+                if (onSubmit) onSubmit(null);
+              }}
+            >
+              No ticket? Skip this step
+            </button>
+            <Continue
+              onClick={handleSubmit}
+              disabled={!ticketNumber || loading}
+              type="submit"
+            >
+              {loading ? "Saving..." : "Continue"}
+            </Continue>
+          </div>
         </form>
       </div>
 

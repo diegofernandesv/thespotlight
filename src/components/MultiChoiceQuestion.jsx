@@ -17,6 +17,7 @@ const MultiChoiceQuestion = ({
   onContinue,
   storyTitle = "Our Nature",
   stepIndicator = "1/7",
+  onSkip,
 }) => {
   const [selectedChoice, setSelectedChoice] = useState(null);
 
