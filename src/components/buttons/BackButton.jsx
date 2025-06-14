@@ -1,5 +1,4 @@
-
-import BackIcon from "./icons/BackIcon";
+import BackIcon from "../icons/BackIcon";
 
 const BackButton = ({ onClick }) => {
   return (

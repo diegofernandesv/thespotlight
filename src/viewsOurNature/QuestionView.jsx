@@ -3,6 +3,7 @@ import MultiChoiceQuestion from "../components/MultiChoiceQuestion";
 import FactPage from "../components/FactPage";
 import { saveAnswers, updateExhibitionId } from "../supabaseClient";
 import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 export const questions = [
   {
@@ -13,13 +14,13 @@ export const questions = [
       "It reminded me how disconnected we are from where things come from.",
       "I'm not sure yet, it gave me something to think about.",
     ],
-    fact: "Did you know? The Amazon rainforest produces 20% of the world's oxygen.",
+    fact: "However you felt, it's a starting point. There's more to this issue and it's worth exploring more.",
     storyTitle: "Our Nature",
   },
   {
     question: "What's more important: protecting bees or ensuring high crop yields and stable food prices?",
     choices: ["Protecting bees", "Productivity"],
-    fact: "Bees and other pollinators are essential for 75% of global food crops...",
+    fact: "Bees and other pollinators are essential for 75% of global food crops, including fruits, vegetables, nuts, and coffee. Without them, yields drop, prices rise, and food diversity decline, threatening ecosystems, farmers' livelihoods, and global food security.",
     storyTitle: "Our Nature",
   },
   {
@@ -28,25 +29,31 @@ export const questions = [
       "Yes — progress has to start somewhere.",
       "No — it feels like we're fixing a leak in a sinking ship",
     ],
-    fact: "Denmark cut emissions by 40% since 1990...",
+    fact: "Denmark cut emissions by 40% since 1990 and now gets over 50% of electricity from wind. India's total emissions rise, but per person they emit 75% less than Denmark. Wealthy countries still lead in per-capita impact.",
     storyTitle: "Our Nature",
   },
   {
     question: "Artificial lights are causing birds and insects to disappear. Your street is brightly lit for safety and comfort. Would you vote to make your neighborhood darker?",
     choices: ["Yes", "No"],
-    fact: "Artificial light at night disrupts migration, feeding...",
+    fact: "Artificial light at night disrupts migration, feeding, and reproduction in birds, insects, and bats. Insects attracted to lights die in large numbers. Studies show street lighting contributes to biodiversity loss — but reducing it can raise safety concerns.",
     storyTitle: "Our Nature",
   },
   {
     question: "A new highway promises faster travel across Jutland — but it threatens a rare hedgehog habitat. Would you still support it?",
     choices: ["Reroute the highway", "Cancel it", "Build it anyway"],
-    fact: "European hedgehog populations have dropped by up to 70%...",
+    fact: "European hedgehog populations have dropped by up to 70% in some regions over 20 years. Roads are a key factor — not just due to roadkill, but because they split up habitats, isolate populations, and block access to food and mates.",
     storyTitle: "Our Nature",
   },
   {
     question: "To reduce carbon emissions, Denmark covers large open areas with wind turbines — but this drives away rare birds and disrupts their migration. Would you rather:",
     choices: ["Prioritize clean energy", "Protect untouched bird habitats"],
-    fact: "Wind power supplies over 50% of Denmark's electricity...",
+    fact: "Wind power supplies over 50% of Denmark's electricity. However, studies show that turbines can displace bird species like the sea eagle and reduce breeding success near wind farms. Placement and design play a key role in reducing impacts.",
+    storyTitle: "Our Nature",
+  },
+    {
+    question: "At the store, you see two yogurts: one is organic and made in Germany, the other is local but conventional. One supports sustainable practices. The other supports local farmers. Which do you buy?: ",
+    choices: ["German sustainable yogurt", "Local yogurt"],
+    fact: "Denmark imports over 60% of its food, contributing to a globalized food system that has heavy environmental costs through transport, packaging, and resource use.",
     storyTitle: "Our Nature",
   },
 ];
@@ -60,6 +67,7 @@ const QuestionView = ({ ticket }) => {
   const [error, setError] = useState(null);
   const [saveStatus, setSaveStatus] = useState({ show: false, success: false });
   const containerRef = useRef(null);
+  const navigate = useNavigate();
 
   const isFactStep = step % 2 === 1;
   const questionIndex = Math.floor(step / 2);
@@ -70,6 +78,9 @@ const QuestionView = ({ ticket }) => {
     setSaveStatus({ show: true, success });
     setTimeout(() => setSaveStatus({ show: false, success: false }), 2000);
   };
+
+  // Check if we're at the completion screen
+  const isCompletionScreen = step >= totalSteps;
 
   // Load existing answers and verify ticket on mount
   useEffect(() => {
@@ -214,19 +225,37 @@ const QuestionView = ({ ticket }) => {
     }
   };
 
-  if (questionIndex >= questions.length) {
+  if (isCompletionScreen) {
     return (
       <div
         className="completionScreen"
         style={{
           height: "100vh",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          fontSize: 24,
+          padding: "2rem",
+          textAlign: "center",
+          backgroundColor: "#f5f5f5",
+          color: "#333",
+          fontFamily: "inherit"
         }}
       >
-        🎉 You've completed the questions!
+        <h1 style={{ 
+          fontSize: "2.5rem", 
+          marginBottom: "1.5rem",
+          fontWeight: "600"
+        }}>
+          Thank you for stepping into the spotlight of Our Nature.
+        </h1>
+        <p style={{ 
+          fontSize: "1.25rem", 
+          lineHeight: "1.6",
+          maxWidth: "800px"
+        }}>
+          We hope this shed more light on complex, still-relevant issues and that you'll carry that awareness forward.
+        </p>
       </div>
     );
   }
@@ -248,11 +277,13 @@ const QuestionView = ({ ticket }) => {
           totalSteps={questions.length}
           onBack={handleBack}
           onSound={handleSound}
-          onContinue={() =>
-            step < totalSteps - 1
-              ? animateAndSetStep(step + 1)
-              : alert("Thanks again!")
-          }
+          onContinue={() => {
+            if (step < totalSteps - 1) {
+              animateAndSetStep(step + 1);
+            } else {
+              navigate("/thank-you");
+            }
+          }}
           storyTitle={questions[questionIndex].storyTitle}
           stepIndicator={`${progressStep}/${questions.length}`}
         />

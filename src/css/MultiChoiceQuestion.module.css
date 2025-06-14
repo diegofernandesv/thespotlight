@@ -149,6 +149,12 @@
   justify-content: center;
 }
 
+.smallText {
+  font-size: 0.9rem;
+  font-family: "Neue Montreal";
+  font-weight: 400;
+}
+
 @media (max-width: 640px) {
   .mainContent {
     padding: 32px 24px;
