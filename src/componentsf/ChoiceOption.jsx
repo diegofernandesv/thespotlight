@@ -1,4 +1,4 @@
-import styles from "../components/css/ChoiceOption.module.css";
+import styles from "../componentsf/css/ChoiceOption.module.css";
 
 const ChoiceOption = ({ children, onClick, value, className = "", isActive, type = "button" }) => {
   return (

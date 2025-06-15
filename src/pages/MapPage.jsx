@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import Continue from "../components/buttons/Continue";
-import styles from "../css/MultiChoiceQuestion.module.css";
+import styles from "../components/css/MultiChoiceQuestion.module.css";
 
 const MapPage = ({
   storyTitle = "Our Nature",
@@ -13,7 +13,7 @@ const MapPage = ({
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    navigate("/map"); // Navigate to the map page
+    navigate("/final-booth/start"); // Navigate to the Start page in viewsFinalBooth
   };
 
   return (

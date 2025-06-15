@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import OurNature from "./pages/OurNature";
 import ThankYouPage from "./pages/ThankYouPage";
 import MapPage from "./pages/MapPage";
+import Start from "./viewsFinalBooth/Start";
+import TicketEntry2 from "./viewsFinalBooth/TicketEntry";
+import TicketEntry from "./viewsOurNature/TicketEntry"; // Update the import path if the file is in a different location
 
 function App() {
   return (
@@ -10,6 +13,10 @@ function App() {
         <Route path="/" element={<OurNature />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/map" element={<MapPage />} />
+        <Route path="/final-booth/start" element={<Start />} />
+        <Route path="/ticket-entry2" element={<TicketEntry2 />} />
+                <Route path="/ticket-entry" element={<TicketEntry />} />
+
         <Route path="/*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

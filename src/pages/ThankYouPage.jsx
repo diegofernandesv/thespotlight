@@ -4,7 +4,7 @@ import ProgressBar from "../components/ProgressBar";
 import BackButton from "../components/buttons/BackButton";
 import SoundButton from "../components/SoundButton";
 import Continue from "../components/buttons/Continue";
-import styles from "../css/MultiChoiceQuestion.module.css";
+import styles from "../components/css/MultiChoiceQuestion.module.css";
 
 const MultiChoiceQuestion = ({
   question = "",
