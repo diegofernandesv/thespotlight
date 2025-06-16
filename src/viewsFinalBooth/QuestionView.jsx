@@ -140,7 +140,8 @@ const QuestionView = () => {
   };
 
   const handleSound = () => {
-    console.log("🎧 Playing story audio...");
+    const audio = new Audio('/sounds/ticket_number.mp3');
+    audio.play();
   };
   const handleContinue = async (answerObj) => {
     if (!isFactStep) {
