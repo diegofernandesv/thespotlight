@@ -5,6 +5,7 @@ import MapPage from "./pages/MapPage";
 import Start from "./viewsFinalBooth/Start";
 import TicketEntry2 from "./viewsFinalBooth/TicketEntry";
 import TicketEntry from "./viewsOurNature/TicketEntry"; // Update the import path if the file is in a different location
+import QuestionView from "./viewsFinalBooth/QuestionView";
 
 function App() {
   return (
@@ -14,9 +15,9 @@ function App() {
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/final-booth/start" element={<Start />} />
+        <Route path="/final-booth/question-view" element={<QuestionView />} />
         <Route path="/ticket-entry2" element={<TicketEntry2 />} />
-                <Route path="/ticket-entry" element={<TicketEntry />} />
-
+        <Route path="/ticket-entry" element={<TicketEntry />} />
         <Route path="/*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

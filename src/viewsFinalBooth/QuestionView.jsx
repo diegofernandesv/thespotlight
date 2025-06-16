@@ -3,7 +3,7 @@ import MultiChoiceQuestion from "../componentsf/MultiChoiceQuestion";
 import FactPage from "../componentsf/FactPage";
 import { saveAnswers, updateExhibitionId } from "../supabaseClient";
 import { supabase } from "../supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const questions = [
   {
@@ -13,7 +13,7 @@ export const questions = [
       "Wildlife and biodiversity.",
       "People and cultures.",
     ],
-    fact: "Climate, biodiversity, and human societies are closely linked. Changes in climate can harm wildlife and affect people’s lives around the world.",
+    fact: "Climate, biodiversity, and human societies are closely linked. Changes in climate can harm wildlife and affect people's lives around the world.",
     storyTitle: "Final Booth",
   },
   {
@@ -27,8 +27,8 @@ export const questions = [
     choices: [
       "A fact I learned.",
       "A personal thought.",
-      "A question I’m still thinking about.",
-      "I wouldn’t share anything.",
+      "A question I'm still thinking about.",
+      "I wouldn't share anything.",
     ],
     fact: "Scientists agree that protecting nature, changing how we use resources, and working together are all needed to address global challenges.",
     storyTitle: "Final Booth",
@@ -41,7 +41,7 @@ export const questions = [
   },
   {
     question: "After the exhibitions, what do you think is the best next step?",
-    choices: ["Keep exploring new topics.", "Focus on one issue that matters to me.", "Join a group or activity.","I’m not sure yet."],
+    choices: ["Keep exploring new topics.", "Focus on one issue that matters to me.", "Join a group or activity.","I'm not sure yet."],
     fact: "People are more likely to stay engaged when they take small steps that fit their interests and daily life.",
     storyTitle: "Final Booth",
   },
@@ -49,7 +49,9 @@ export const questions = [
 
 const totalSteps = questions.length * 2;
 
-const QuestionView = ({ ticket }) => {
+const QuestionView = () => {
+  const location = useLocation();
+  const ticket = location.state?.ticket;
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -97,8 +99,8 @@ const QuestionView = ({ ticket }) => {
         }
 
         // If exhibition_id is different or not set, update it
-        if (existingTicket.exhibition_id !== "Our Nature") {
-          const success = await updateExhibitionId(ticketNumber, "Our Nature");
+        if (existingTicket.exhibition_id !== "Final Booth") {
+          const success = await updateExhibitionId(ticketNumber, "Final Booth");
           if (!success) {
             console.warn("Could not update exhibition_id");
           }
@@ -151,21 +153,20 @@ const QuestionView = ({ ticket }) => {
 
         // Update local state first
         const updatedAnswers = [...answers];
-        updatedAnswers[questionIndex] = answerObj[`Q${questionIndex + 1}`].answer;
+        updatedAnswers[questionIndex] = answerObj[`Q${questionIndex + 8}`].answer;
         setAnswers(updatedAnswers);
         
         // Build the full answers object
         const mergedAnswersObj = {};
         for (let i = 0; i < questions.length; i++) {
-          mergedAnswersObj[`Q${i + 1}`] = {
+          mergedAnswersObj[`Q${i + 8}`] = {
             question: questions[i].question,
             answer: updatedAnswers[i] || "",
             timestamp: updatedAnswers[i] ? new Date().toISOString() : null,
           };
         }
         
-        const success = await saveAnswers(ticketNumber, "Our Nature", mergedAnswersObj);
-        
+        const success = await saveAnswers(ticketNumber, "Final Booth", mergedAnswersObj);
         
         // Move to next step only if save was successful
         if (step < totalSteps - 1) {
@@ -190,7 +191,7 @@ const QuestionView = ({ ticket }) => {
         // Create final answers object with all answers
         const finalAnswers = {};
         for (let i = 0; i < questions.length; i++) {
-          finalAnswers[`Q${i + 1}`] = {
+          finalAnswers[`Q${i + 8}`] = {
             question: questions[i].question,
             answer: answers[i] || "",
             timestamp: answers[i] ? new Date().toISOString() : null,
@@ -198,7 +199,7 @@ const QuestionView = ({ ticket }) => {
         }
 
         console.log("Saving final answers:", finalAnswers);
-        const success = await saveAnswers(ticketNumber, "Our Nature", finalAnswers);
+        const success = await saveAnswers(ticketNumber, "Final Booth", finalAnswers);
         
         if (success) {
           console.log("✅ Successfully saved all answers!");
@@ -236,7 +237,7 @@ const QuestionView = ({ ticket }) => {
           marginBottom: "1.5rem",
           fontWeight: "600"
         }}>
-          Thank you for stepping into the spotlight of Our Nature.
+          Thank you for stepping into the spotlight of Final Booth.
         </h1>
         <p style={{ 
           fontSize: "1.25rem", 
@@ -286,7 +287,7 @@ const QuestionView = ({ ticket }) => {
           onSound={handleSound}
           onContinue={(selectedChoice) => {
             const answerObj = {
-              [`Q${questionIndex + 1}`]: {
+              [`Q${questionIndex + 8}`]: {
                 question: questions[questionIndex].question,
                 answer: selectedChoice,
                 timestamp: new Date().toISOString()

@@ -12,14 +12,43 @@ interface ImportMeta {
 }
 
 // Supabase environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Initialize Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Validate environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables:', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseAnonKey
+  });
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+}
+
+console.log('Initializing Supabase client with URL:', supabaseUrl);
+
+// Initialize Supabase client with error handling
+let supabase;
+try {
+  supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  });
+  console.log('Supabase client initialized successfully');
+} catch (error) {
+  console.error('Error initializing Supabase client:', error);
+  throw new Error('Failed to initialize Supabase client');
+}
+
+export { supabase };
 
 // Type for answers object
 type Answers = Record<string, any>;
+
+// Add type for exhibition_id
+type ExhibitionId = string | string[];
 
 /**
  * Updates the answers for an existing ticket in the 'ticket_table'.
@@ -39,10 +68,10 @@ export async function saveAnswers(
   }
 
   try {
-    // First get the existing answers to merge with new ones
+    // First get the existing ticket data
     const { data: existingData, error: fetchError } = await supabase
       .from("ticket_table")
-      .select("answers")
+      .select("answers, exhibition_id")
       .eq("ticket_number", ticket_number)
       .single();
 
@@ -55,6 +84,38 @@ export async function saveAnswers(
 
     // Get existing answers or initialize empty object
     const existingAnswers = existingData?.answers || {};
+    
+    // Handle exhibition_id as a proper JSON array
+    let exhibitionIds: string[] = [];
+    try {
+      // If it's already a string that looks like JSON, parse it
+      if (typeof existingData?.exhibition_id === 'string') {
+        try {
+          // Clean up the string by removing extra backslashes
+          const cleanStr = existingData.exhibition_id.replace(/\\/g, '');
+          exhibitionIds = JSON.parse(cleanStr);
+        } catch {
+          // If parsing fails, treat it as a single value
+          exhibitionIds = [existingData.exhibition_id];
+        }
+      } 
+      // If it's already an array, use it directly
+      else if (Array.isArray(existingData?.exhibition_id)) {
+        exhibitionIds = existingData.exhibition_id;
+      }
+      // If it's a single string, make it an array
+      else if (existingData?.exhibition_id) {
+        exhibitionIds = [existingData.exhibition_id];
+      }
+    } catch (e) {
+      console.warn("Error parsing exhibition_id, starting fresh:", e);
+      exhibitionIds = [];
+    }
+
+    // Add new exhibition_id if not present
+    if (!exhibitionIds.includes(exhibition_id)) {
+      exhibitionIds.push(exhibition_id);
+    }
 
     // Create new merged answers object
     const mergedAnswers = {
@@ -63,12 +124,13 @@ export async function saveAnswers(
     };
 
     console.log("Saving merged answers:", mergedAnswers);
+    console.log("Updated exhibition IDs:", exhibitionIds);
 
     const { error: updateError } = await supabase
       .from("ticket_table")
       .update({
         answers: mergedAnswers,
-        exhibition_id: exhibition_id.trim()
+        exhibition_id: exhibitionIds // Store as a clean array
       })
       .eq("ticket_number", ticket_number);
 
@@ -159,22 +221,62 @@ export async function updateExhibitionId(
   }
   console.log("🔍 Updating Supabase with:", { ticket_number, exhibition_id });
 
-  const { data, error } = await supabase
-    .from("ticket_table")
-    .update({ exhibition_id: exhibition_id.trim() })
-    .eq("ticket_number", ticket_number)
-    .select(); // Get the updated row(s) back
+  try {
+    // First get the existing exhibition_id
+    const { data: existingData, error: fetchError } = await supabase
+      .from("ticket_table")
+      .select("exhibition_id")
+      .eq("ticket_number", ticket_number)
+      .single();
 
-  if (error) {
-    console.error("❌ Supabase update error:", error);
+    if (fetchError) {
+      console.error("Error fetching existing exhibition_id:", fetchError);
+      return false;
+    }
+
+    // Handle exhibition_id as a proper JSON array
+    let exhibitionIds: string[] = [];
+    try {
+      if (typeof existingData?.exhibition_id === 'string') {
+        try {
+          // Clean up the string by removing extra backslashes
+          const cleanStr = existingData.exhibition_id.replace(/\\/g, '');
+          exhibitionIds = JSON.parse(cleanStr);
+        } catch {
+          // If parsing fails, treat it as a single value
+          exhibitionIds = [existingData.exhibition_id];
+        }
+      } else if (Array.isArray(existingData?.exhibition_id)) {
+        exhibitionIds = existingData.exhibition_id;
+      } else if (existingData?.exhibition_id) {
+        exhibitionIds = [existingData.exhibition_id];
+      }
+    } catch (e) {
+      console.warn("Error parsing exhibition_id, starting fresh:", e);
+      exhibitionIds = [];
+    }
+
+    // Add new exhibition_id if not present
+    if (!exhibitionIds.includes(exhibition_id)) {
+      exhibitionIds.push(exhibition_id);
+    }
+
+    const { error: updateError } = await supabase
+      .from("ticket_table")
+      .update({ 
+        exhibition_id: exhibitionIds // Store as a clean array
+      })
+      .eq("ticket_number", ticket_number);
+
+    if (updateError) {
+      console.error("❌ Supabase update error:", updateError);
+      return false;
+    }
+
+    console.log("✅ Successfully updated exhibition_id to:", exhibitionIds);
+    return true;
+  } catch (error) {
+    console.error("❌ Unexpected error updating exhibition_id:", error);
     return false;
   }
-
-  if (!data || data.length === 0) {
-    console.warn("⚠️ No row found to update for ticket_number:", ticket_number);
-    return false;
-  }
-
-  console.log("✅ Supabase update result:", data);
-  return true;
 }

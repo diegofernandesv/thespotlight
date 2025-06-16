@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BackButton from "../componentsf/BackButton";
 import ProgressBar from "../componentsf/ProgressBar";
 import SoundButton from "../componentsf/SoundButton";
@@ -16,6 +17,7 @@ const TicketEntry = ({
   currentStep = 0,
   totalSteps = 7,
 }) => {
+  const navigate = useNavigate();
   const [ticketNumber, setTicketNumber] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,65 +42,102 @@ const TicketEntry = ({
 
     const ticketNumberAsInt = parseInt(trimmed, 10);
 
-    // Check if ticket exists
-    const { data: existing, error: fetchError } = await supabase
-      .from("ticket_table")
-      .select("ticket_number")
-      .eq("ticket_number", ticketNumberAsInt)
-      .maybeSingle();
+    try {
+      // Test Supabase connection first
+      const { data: testData, error: testError } = await supabase
+        .from("ticket_table")
+        .select("count", { count: "exact", head: true });
 
-    if (fetchError) {
-      console.error("Error checking ticket:", fetchError);
-      setError("Something went wrong. Please try again.");
+      if (testError) {
+        console.error("Supabase connection error:", testError);
+        setError("Unable to connect to the server. Please try again later.");
+        setLoading(false);
+        return;
+      }
+
+      // Check if ticket exists
+      const { data: existing, error: fetchError } = await supabase
+        .from("ticket_table")
+        .select("*")
+        .eq("ticket_number", ticketNumberAsInt)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error("Error checking ticket:", fetchError);
+        setError("Something went wrong. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      if (existing) {
+        console.log("✅ Ticket exists:", ticketNumberAsInt);
+        
+        // Keep ALL existing answers exactly as they are
+        const currentAnswers = existing.answers || {};
+        
+        // Handle exhibition_id as an array
+        let exhibitionIds = existing.exhibition_id || [];
+        if (!Array.isArray(exhibitionIds)) {
+          exhibitionIds = [exhibitionIds];
+        }
+        if (!exhibitionIds.includes("Final Booth")) {
+          exhibitionIds.push("Final Booth");
+        }
+
+        // Update the existing ticket with the same answers and updated exhibition_id array
+        const { error: updateError } = await supabase
+          .from("ticket_table")
+          .update({ 
+            answers: currentAnswers, // Keep existing answers exactly as they are
+            exhibition_id: exhibitionIds
+          })
+          .eq("ticket_number", ticketNumberAsInt);
+
+        if (updateError) {
+          console.error("Error updating ticket:", updateError);
+          setError("Failed to update ticket. Please try again.");
+          setLoading(false);
+          return;
+        }
+
+        console.log("✅ Successfully updated ticket:", ticketNumberAsInt);
+        setLoading(false);
+        navigate("/final-booth/question-view", { state: { ticket: ticketNumberAsInt } });
+        return;
+      }
+
+      // For new tickets, initialize with empty answers
+      const initialAnswers = {};
+
+      // Insert new ticket with exhibition_id as an array
+      const { error: insertError } = await supabase
+        .from("ticket_table")
+        .insert([{ 
+          ticket_number: ticketNumberAsInt,
+          exhibition_id: ["Final Booth"],
+          answers: initialAnswers
+        }]);
+
+      if (insertError) {
+        console.error("Error creating ticket:", insertError);
+        setError("Failed to save ticket. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("✅ Successfully created ticket:", ticketNumberAsInt);
+
+      if (onSubmit) {
+        onSubmit(ticketNumberAsInt);
+      }
+
       setLoading(false);
-      return;
-    }
-
-    if (existing) {
-      console.log("✅ Ticket exists:", ticketNumberAsInt);
+      navigate("/final-booth/question-view", { state: { ticket: ticketNumberAsInt } });
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      setError("An unexpected error occurred. Please try again.");
       setLoading(false);
-      // Navigate to QuestionView
-      window.location.href = `/viewsFinalBooth/QuestionView?ticket=${ticketNumberAsInt}`;
-      return;
     }
-
-    // Initialize answers with proper structure
-    const initialAnswers = {};
-    questions.forEach((q, i) => {
-      initialAnswers[`Q${i + 1}`] = {
-        question: q.question,
-        answer: "",
-        timestamp: null,
-      };
-    });
-  
-
-    // Insert new ticket
-    const { error: insertError } = await supabase
-      .from("ticket_table")
-      .insert([{ 
-        ticket_number: ticketNumberAsInt,
-        exhibition_id: "Our Nature",
-        answers: initialAnswers
-      }]);
-
-    if (insertError) {
-      console.error("Error creating ticket:", insertError);
-      setError("Failed to save ticket. Please try again.");
-      setLoading(false);
-      return;
-    }
-
-    console.log("✅ Successfully created ticket:", ticketNumberAsInt);
-
-    if (onSubmit) {
-      onSubmit(ticketNumberAsInt);
-    }
-
-    setLoading(false);
-
-    // Navigate to QuestionView
-    window.location.href = `/viewsFinalBooth/QuestionView?ticket=${ticketNumberAsInt}`;
   };
 
   return (
