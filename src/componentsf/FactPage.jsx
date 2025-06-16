@@ -5,6 +5,7 @@ import SoundButton from "./SoundButton";
 import ArrowRightIcon from "./icons/ArrowRightIcon";
 import styles from "../componentsf/css/MultiChoiceQuestion.module.css";
 import Continue from "./buttons/Continue";
+import finalBoothImage from "../assets/finalbooth.png";
 
 const FactPage = ({
   fact = "Did you know? The Amazon rainforest produces 20% of the world's oxygen.",
@@ -15,7 +16,7 @@ const FactPage = ({
   onContinue,
   storyTitle = "Our Nature",
   stepIndicator = "1/7",
-  backgroundImage = "https://cdn.builder.io/api/v1/image/assets/TEMP/42dafb875c9b4398572d80da33d9dedd6b933b90?placeholderIfAbsent=true",
+  backgroundImage = finalBoothImage,
 }) => {
   return (
     <div className={styles.container}>
@@ -37,9 +38,17 @@ const FactPage = ({
         </div>
       </div>
       <img
-        src={backgroundImage}
-        alt=""
-        className={styles.backgroundImage}
+        src={finalBoothImage}
+        alt="Background"
+        className="backgroundImage"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: "auto" /* Fixed: Wrapped auto in quotes */,
+          objectFit: "cover",
+        }}
       />
       <div className={styles.footerOverlay}>
         <div className={styles.footerText}>{storyTitle}</div>
