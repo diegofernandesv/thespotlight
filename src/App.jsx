@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 // Layout + Views
 import Layout from "./Layout";
-import MainScreen from "./views/MainScreen";
-import QuizRoute from "./views/QuizRoute";
+import MainScreen from "./viewsOurNature/MainScreen";
+import QuizRoute from "./viewsOurNature/QuizRoute";
 
 // Pages & Final Booth Views
 import OurNature from "./pages/OurNature";
@@ -13,8 +13,8 @@ import ThankYouPage2 from "./pages/ThankYouPage2";
 import MapPage from "./pages/MapPage";
 import Start from "./viewsFinalBooth/Start";
 import QuestionView from "./viewsFinalBooth/QuestionView";
-import TicketEntry2 from "./viewsFinalBooth/TicketEntry";
-import TicketEntry from "./viewsOurNature/TicketEntry";
+import TicketEntry2 from "./viewsFinalBooth/TicketEntry.jsx";
+import TicketEntry from "./viewsOurNature/TicketEntry.jsx";
 
 function App() {
   return (
