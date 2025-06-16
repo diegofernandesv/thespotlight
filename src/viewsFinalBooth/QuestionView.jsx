@@ -271,7 +271,7 @@ const QuestionView = () => {
             if (step < totalSteps - 1) {
               animateAndSetStep(step + 1);
             } else {
-              navigate("/thank-you");
+              navigate("/thank-you2");
             }
           }}
           storyTitle={questions[questionIndex].storyTitle}

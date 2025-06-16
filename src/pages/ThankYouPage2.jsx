@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ProgressBar from "../components/ProgressBar";
+import ProgressBar from "../componentsf/ProgressBar";
 import BackButton from "../components/buttons/BackButton";
 import SoundButton from "../components/SoundButton";
-import Continue from "../components/buttons/Continue";
+import Continue from "../componentsf/buttons/Continue";
 import styles from "../components/css/MultiChoiceQuestion.module.css";
+import finalBoothImage from "../assets/finalbooth.png";
 
-const ThankYouPage = ({
+const ThankYouPage2 = ({
   question = "",
   choices = [],
-  currentStep = 7,
-  totalSteps = 7,
+  currentStep = 5,
+  totalSteps = 5,
   onBack,
   onSound,
   onChoiceSelect,
   onContinue,
-  storyTitle = "Our Nature",
-  stepIndicator = "7/7",
+  storyTitle = "Final Booth",
+  stepIndicator = "5/5",
   onSkip,
 }) => {
   const navigate = useNavigate();
@@ -49,8 +50,7 @@ const ThankYouPage = ({
       <div className={styles.mainContent}>
         <div className={styles.contentWrapper}>
           <div className={styles.questionTitle}>
-            Thank you for stepping into the spotlight of Our Nature.<br />{" "}We hope this shed more light on complex, still-relevant issues and
-              that you’ll carry that awareness forward.
+            Are you ready to see your results?
           </div>
 
           <div className={styles.choicesContainer}>
@@ -64,7 +64,7 @@ const ThankYouPage = ({
       </div>
 
       <img
-        src="https://cdn.builder.io/api/v1/image/assets/TEMP/42dafb875c9b4398572d80da33d9dedd6b933b90?placeholderIfAbsent=true"
+        src={finalBoothImage}
         alt=""
         className={styles.backgroundImage}
       />
@@ -77,4 +77,4 @@ const ThankYouPage = ({
   );
 };
 
-export default ThankYouPage;
+export default ThankYouPage2;
