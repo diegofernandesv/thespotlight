@@ -15,6 +15,7 @@ import Start from "./viewsFinalBooth/Start";
 import QuestionView from "./viewsFinalBooth/QuestionView";
 import TicketEntry2 from "./viewsFinalBooth/TicketEntry.jsx";
 import TicketEntry from "./viewsOurNature/TicketEntry.jsx";
+import Wrapped from "./pages/Wrapped.jsx";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="/final-booth/question-view" element={<QuestionView />} />
         <Route path="/ticket-entry2" element={<TicketEntry2 />} />
         <Route path="/ticket-entry" element={<TicketEntry />} />
+        <Route path="/wrapped" element={<Wrapped />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
