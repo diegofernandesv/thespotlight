@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import BackButton from "../components/BackButton";
 import ProgressBar from "../components/ProgressBar";
 import SoundButton from "../components/SoundButton";
@@ -18,6 +18,18 @@ const TicketEntry = ({
   const [ticketNumber, setTicketNumber] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const audioRef = useRef(new Audio("/sounds/ticket_number.mp3"));
+
+  const toggleSound = () => {
+    if (isMuted) {
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0; // Reset audio to the beginning
+    }
+    setIsMuted(!isMuted);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,7 +113,7 @@ const TicketEntry = ({
 
       <div className={styles.navigationContainer}>
         <BackButton onClick={onBack} />
-        <SoundButton onClick={onSound} />
+        <SoundButton onClick={toggleSound} isMuted={isMuted} />
       </div>
 
       <div className={styles.ticketEntryContainer}>

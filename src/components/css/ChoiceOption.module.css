@@ -1,12 +1,7 @@
 .choiceOption {
   width: 100%;
   color: #014C36;
-  font-family:
-    "Neue Montreal",
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
+  font-family: "Neue Montreal", sans-serif;
   font-size: 20px;
   font-weight: 400;
   line-height: 150%;

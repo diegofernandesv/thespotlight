@@ -10,7 +10,7 @@
 
 body {
   margin: 0;
-  font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+  font-family: "Urbanist", sans-serif;
   background-color: #f7f7f7;
 }
 
@@ -76,7 +76,7 @@ body {
 
 .questionTitle,
 .ticketEntryContainer h2 {
-  font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+  font-family: "Urbanist", sans-serif;
   font-size: 36px;
   font-weight: 700;
   line-height: 120%;
@@ -154,7 +154,7 @@ body {
               linear-gradient(270deg, #171B1C 17.31%, #453D3D 100%) border-box;
   color: #2c3638;
   transition: border-color 0.2s ease;
-  font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+  font-family: "Urbanist", sans-serif;
 }
 
 .ticketInput:focus {
@@ -171,7 +171,7 @@ body {
   color: #d32f2f;
   font-size: 15px;
   margin-top: -12px;
-  font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+  font-family: "Urbanist", sans-serif;
 }
 
 .formFooter {
@@ -201,7 +201,7 @@ body {
   color: #2c3638;
   font-size: 16px;
   font-weight: 400;
-  font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+  font-family: "Urbanist", sans-serif;
 }
 
 .submitButton {
@@ -234,7 +234,7 @@ body {
   box-shadow: 0 2px 8px rgba(122, 193, 66, 0.08);
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+  font-family: "Urbanist", sans-serif;
 }
 
 .betweenButtons {
@@ -253,7 +253,7 @@ body {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.01em;
-  font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+  font-family: "Urbanist", sans-serif;
 }
 
 .backgroundImage {

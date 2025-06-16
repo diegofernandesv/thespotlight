@@ -7,7 +7,7 @@
   background: #fff;
   position: relative;
   overflow: hidden;
-  font-family: 'Urbanist'
+  font-family: "Urbanist", sans-serif;
 }
 
 .start-content {
