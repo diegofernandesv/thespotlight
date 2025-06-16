@@ -20,7 +20,7 @@
 }
 
 .progressSegmentActive {
-  background: linear-gradient(90deg, #26380c 0%, #77b521 100%);
+  background: linear-gradient(270deg, #014C36 0%, #6A9E22 100%);
 }
 
 .progressSegmentInactive {

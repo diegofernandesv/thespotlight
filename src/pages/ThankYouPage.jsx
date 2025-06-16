@@ -1,24 +1,25 @@
 import React, { useState } from "react";
-import ProgressBar from "./ProgressBar";
-import BackButton from "./BackButton";
-import SoundButton from "./SoundButton";
-import ChoiceOption from "./ChoiceOption";
+import { useNavigate } from "react-router-dom";
+import ProgressBar from "../components/ProgressBar";
+import BackButton from "../components/buttons/BackButton";
+import SoundButton from "../components/SoundButton";
+import Continue from "../components/buttons/Continue";
 import styles from "../components/css/MultiChoiceQuestion.module.css";
-import Continue from "./buttons/Continue";
 
-const MultiChoiceQuestion = ({
+const ThankYouPage = ({
   question = "",
   choices = [],
-  currentStep = 1,
+  currentStep = 7,
   totalSteps = 7,
   onBack,
   onSound,
   onChoiceSelect,
   onContinue,
   storyTitle = "Our Nature",
-  stepIndicator = "1/7",
+  stepIndicator = "7/7",
   onSkip,
 }) => {
+  const navigate = useNavigate();
   const [selectedChoice, setSelectedChoice] = useState(null);
 
   const handleChoiceSelect = (choice) => {
@@ -29,9 +30,7 @@ const MultiChoiceQuestion = ({
   };
 
   const handleContinue = () => {
-    if (onContinue && selectedChoice) {
-      onContinue(selectedChoice);
-    }
+    navigate("/map"); // Ensure this navigates to the Map Page
   };
 
   return (
@@ -40,7 +39,7 @@ const MultiChoiceQuestion = ({
 
       <div className={styles.navigationContainer}>
         <div>
-          <BackButton onClick={onBack} />
+          <BackButton onClick={() => window.history.back()} />
         </div>
         <div>
           <SoundButton onClick={onSound} />
@@ -49,25 +48,17 @@ const MultiChoiceQuestion = ({
 
       <div className={styles.mainContent}>
         <div className={styles.contentWrapper}>
-          <div className={styles.questionTitle}>{question}</div>
+          <div className={styles.questionTitle}>
+            Thank you for stepping into the spotlight of Our Nature.<br />{" "}We hope this shed more light on complex, still-relevant issues and
+              that you’ll carry that awareness forward.
+          </div>
 
           <div className={styles.choicesContainer}>
-            {choices.map((choice, index) => (
-              <ChoiceOption
-                key={index}
-                value={choice}
-                onClick={handleChoiceSelect}
-                isActive={selectedChoice === choice}
-              >
-                {choice}
-              </ChoiceOption>
-            ))}
+
           </div>
+
           <div className={styles.continueButton}>
-            <Continue
-              onClick={handleContinue}
-              disabled={!selectedChoice}
-            />
+            <Continue onClick={handleContinue} />
           </div>
         </div>
       </div>
@@ -86,4 +77,4 @@ const MultiChoiceQuestion = ({
   );
 };
 
-export default MultiChoiceQuestion;
+export default ThankYouPage;

@@ -3,8 +3,9 @@ import ProgressBar from "./ProgressBar";
 import BackButton from "./BackButton";
 import SoundButton from "./SoundButton";
 import ChoiceOption from "./ChoiceOption";
-import styles from "../components/css/MultiChoiceQuestion.module.css";
+import styles from "../componentsf/css/MultiChoiceQuestion.module.css";
 import Continue from "./buttons/Continue";
+import finalBoothImage from "../assets/finalbooth.png";
 
 const MultiChoiceQuestion = ({
   question = "",
@@ -73,7 +74,7 @@ const MultiChoiceQuestion = ({
       </div>
 
       <img
-        src="https://cdn.builder.io/api/v1/image/assets/TEMP/42dafb875c9b4398572d80da33d9dedd6b933b90?placeholderIfAbsent=true"
+        src={finalBoothImage}
         alt=""
         className={styles.backgroundImage}
       />
