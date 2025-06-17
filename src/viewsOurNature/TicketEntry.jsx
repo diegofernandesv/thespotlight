@@ -98,6 +98,9 @@ const TicketEntry = ({
       return;
     }
 
+    // Save ticket number to localStorage for fallback in QuestionView
+    localStorage.setItem('ticket_number', ticketNumberAsInt);
+
     console.log("✅ Successfully created ticket:", ticketNumberAsInt);
 
     if (onSubmit) {

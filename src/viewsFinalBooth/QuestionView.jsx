@@ -76,67 +76,73 @@ const QuestionView = () => {
   // Load existing answers and verify ticket on mount
   useEffect(() => {
     const initializeQuestions = async () => {
-      try {
-        const ticketNumber = typeof ticket === "string" ? parseInt(ticket, 10) : ticket;
-        
-        if (!ticketNumber || isNaN(ticketNumber)) {
-          throw new Error("Invalid ticket number");
-        }
+  try {
+    // If `ticket` prop or state is undefined, try to load from localStorage as a fallback
+    let ticketNumber = ticket;
+    if (!ticketNumber) {
+      ticketNumber = localStorage.getItem('ticket_number');
+    }
+    ticketNumber = typeof ticketNumber === "string" ? parseInt(ticketNumber, 10) : ticketNumber;
 
-        // First verify the ticket exists and get any existing answers
-        let { data: existingTicket, error: checkError } = await supabase
-          .from("ticket_table")
-          .select("ticket_number, answers, exhibition_id")
-          .eq("ticket_number", ticketNumber)
-          .single();
+    // Guard: must be a real number
+    if (!ticketNumber || isNaN(ticketNumber)) {
+      console.warn("Ticket number is missing or invalid:", ticketNumber);
+      throw new Error("Invalid ticket number. Please start again.");
+    }
 
-        // If ticket doesn't exist, throw an error. Creation should happen before this view.
-        if (checkError || !existingTicket) {
-          console.error("Error fetching ticket:", checkError);
-          throw new Error(
-            "Ticket not found or could not be fetched. Please go back and try again."
-          );
-        }
+    // First verify the ticket exists and get any existing answers
+    let { data: existingTicket, error: checkError } = await supabase
+      .from("ticket_table")
+      .select("ticket_number, answers, exhibition_id")
+      .eq("ticket_number", ticketNumber)
+      .single();
 
-        // If exhibition_id is different or not set, update it
-        if (existingTicket.exhibition_id !== "Final Booth") {
-          const success = await updateExhibitionId(ticketNumber, "Final Booth");
-          if (!success) {
-            console.warn("Could not update exhibition_id");
-          }
-        }
+    if (checkError || !existingTicket) {
+      console.error("Error fetching ticket:", checkError);
+      throw new Error("Ticket not found or could not be fetched. Please go back and try again.");
+    }
 
-        // Initialize answers array
-        const existingAnswers = new Array(questions.length).fill(null);
-        
-        // If there are existing answers, convert them to array format
-        if (existingTicket.answers) {
-          for (let i = 0; i < questions.length; i++) {
-            const questionKey = `Q${i + 1}`;
-            const answer = existingTicket.answers[questionKey]?.answer;
-            if (answer) {
-              existingAnswers[i] = answer;
-            }
-          }
-          console.log("Loaded existing answers:", existingAnswers);
-        }
-
-        setAnswers(existingAnswers);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error initializing questions:", error);
-        setError(error.message);
-        setIsLoading(false);
+    // If exhibition_id is different or not set, update it
+    if (existingTicket.exhibition_id !== "Final Booth") {
+      const success = await updateExhibitionId(ticketNumber, "Final Booth");
+      if (!success) {
+        console.warn("Could not update exhibition_id");
       }
-    };
+    }
 
-    initializeQuestions();
-  }, [ticket]);
+    // Initialize answers array
+    const existingAnswers = new Array(questions.length).fill(null);
 
-  const animateAndSetStep = (nextStep) => setStep(nextStep);
+    // If there are existing answers, convert them to array format
+    if (existingTicket.answers) {
+      for (let i = 0; i < questions.length; i++) {
+        const questionKey = `Q${i + 1}`;
+        const answer = existingTicket.answers[questionKey]?.answer;
+        if (answer) {
+          existingAnswers[i] = answer;
+        }
+      }
+      console.log("Loaded existing answers:", existingAnswers);
+    }    setAnswers(existingAnswers);
+    setIsLoading(false);
 
-  const handleBack = () => {
-    if (step > 0) animateAndSetStep(step - 1);
+  } catch (error) {
+    console.error("Error initializing questions:", error);
+    setError(error.message);
+    setIsLoading(false);
+
+    // Optionally, redirect the user if ticket number is invalid:
+    // navigate('/ticket-entry'); // if you use useNavigate
+  }
+};
+
+initializeQuestions();
+}, [ticket]);
+
+const animateAndSetStep = (nextStep) => setStep(nextStep);
+
+const handleBack = () => {
+  if (step > 0) animateAndSetStep(step - 1);
   };
 
   const handleSound = () => {
@@ -256,6 +262,29 @@ const QuestionView = () => {
   }
 
   if (error) {
+    if (error.toLowerCase().includes('invalid ticket number')) {
+      return (
+        <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+          <h2>Ticket number missing or invalid.</h2>
+          <p>Please enter your ticket number to continue.</p>
+          <button
+            style={{
+              padding: '12px 24px',
+              fontSize: '1.1rem',
+              borderRadius: '8px',
+              background: '#1976d2',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer',
+              marginTop: '1rem',
+            }}
+            onClick={() => navigate('/final-booth/ticket-entry')}
+          >
+            Go to Ticket Entry
+          </button>
+        </div>
+      );
+    }
     return <div>Error: {error}</div>;
   }
 

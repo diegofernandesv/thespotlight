@@ -71,7 +71,7 @@ const Wrapped = () => {
   };  return (
     <div className={styles.container}>
       <div className={styles.progressBarContainer}>
-        <ProgressBar totalSteps={4} currentStep={1} />
+        <ProgressBar totalSteps={3} currentStep={1} />
       </div>
       <div className={styles.exhibitionsGrid}>
         {exhibitions.map((exhibition, index) => (
@@ -102,7 +102,7 @@ const Wrapped = () => {
         </p>
       </div>
 
-      <Continue onClick={() => navigate('/final-booth/question-view')}>
+      <Continue onClick={() => navigate('/wrapped2')}>
         Continue
       </Continue>
     </div>

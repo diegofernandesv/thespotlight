@@ -69,6 +69,17 @@
   -webkit-text-fill-color: transparent;
 }
 
+.title2 {
+  font-size: 48px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  background: linear-gradient(270deg, #6DD0F0 -4.3%, #1F48B1 101.27%);
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+margin-bottom: 36px;
+}
+
 .statsContainer {
   display: flex;
   flex-direction: column;
@@ -81,9 +92,56 @@
   font-weight: 500;
   font-family: "Neue Montreal", sans-serif;
 }
+.stat2 {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 36px;
+  font-family: "Neue Montreal", sans-serif;
+}
+
 
 .note {
   font-size:24px;
   color: #666666;
     font-family: "Neue Montreal", sans-serif;
+}
+
+
+.textContainer{
+    margin-top: 500px;
+}
+
+
+.textBox {
+display: flex;
+  background: #fff;
+  border-radius: 32px;
+  padding: 40px 32px;
+  max-width: 600px;
+  margin-bottom: 48px;
+  font-size: 1.25rem;
+  color: #222;
+  font-family: "Neue Montreal", "Urbanist", sans-serif;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    text-align: left;
+}
+
+.title3 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-top: 116px;
+  margin-bottom: 24px;
+  font-family: "Urbanist", sans-serif;
+  background: var(--Gradient-Red, linear-gradient(90deg, #9D1233 20.64%, #F23F3A 119.28%));
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+.continueButton3 {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 600px;
 }

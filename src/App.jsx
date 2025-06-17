@@ -16,6 +16,8 @@ import QuestionView from "./viewsFinalBooth/QuestionView";
 import TicketEntry2 from "./viewsFinalBooth/TicketEntry.jsx";
 import TicketEntry from "./viewsOurNature/TicketEntry.jsx";
 import Wrapped from "./pages/Wrapped.jsx";
+import Wrapped2 from "./pages/Wrapped2.jsx";
+import Wrapped3 from "./pages/Wrapped3.jsx";
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
         <Route path="/ticket-entry2" element={<TicketEntry2 />} />
         <Route path="/ticket-entry" element={<TicketEntry />} />
         <Route path="/wrapped" element={<Wrapped />} />
+        <Route path="/wrapped2" element={<Wrapped2 />} />
+        <Route path="/wrapped3" element={<Wrapped3 />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
