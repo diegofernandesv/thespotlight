@@ -5,6 +5,9 @@ import Layout from "./Layout";
 
 import QuizRoute from "./views/QuizRoute";
 import MainScreen from "./views/MainScreen";
+import TakeAPhoto from "./views/TakeAPhoto";
+import SelectQuote from "./views/SelectQuote";
+import Consent from "./views/Consent";
 
 
 
@@ -19,6 +22,15 @@ const router = createBrowserRouter([
       },
       { path: "quiz",
         element: <QuizRoute />
+      },
+      { path: "photo",
+        element: <TakeAPhoto />
+      },
+      { path: "quote",
+        element: <SelectQuote />
+      },
+      { path: "consent",
+        element: <Consent />
       },
     ],
   },
