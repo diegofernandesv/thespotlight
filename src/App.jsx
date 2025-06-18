@@ -18,6 +18,8 @@ import TicketEntry from "./viewsOurNature/TicketEntry.jsx";
 import TakeAPhoto from "./viewsFinalBooth/TakeAPhoto";
 import SelectQuote from "./viewsFinalBooth/SelectQuote";
 import Consent from "./viewsFinalBooth/Consent";
+import PhotoFilters from "./viewsFinalBooth/PhotoFilters.jsx";
+import PhotoOption from "./viewsFinalBooth/PhotoOption.jsx";
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
         <Route path="/photo" element={<TakeAPhoto />} />
         <Route path="/quote" element={<SelectQuote />} />
         <Route path="/consent" element={<Consent />} />
+        <Route path="/filters" element={<PhotoFilters />} />
+        <Route path="/photoOption" element={<PhotoOption />} />
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" replace />} />

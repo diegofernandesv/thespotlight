@@ -1,0 +1,87 @@
+.wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.wrapper .btnWrapper {
+    display: flex;
+    flex-direction: row;
+    scale: 1.2;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+p {
+    color: #000;
+    text-align: center;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%;
+    width: 642px;
+}
+
+.altWrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+
+}
+.altWrapper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* black with 40% opacity */
+    z-index: 0;
+}
+.altWrapper > * {
+  position: relative;
+  z-index: 1;
+}
+.altWrapper p {
+    color: #fff;
+    text-align: center;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%;
+    width: 642px;
+}
+.altWrapper h1 {
+    color: #fff;
+    text-align: center;
+    font-size: 72px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%;
+    width: 642px;
+}
+.backBtn {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    justify-content: flex-start;
+    left: 50px;
+    top: 50px;
+    gap: 15px;
+
+}
+.backBtn p {
+    width: auto;
+    font-weight: 400;
+    font-size: 20px;
+}
+.backBtn img {
+    width: auto;
+    filter: invert(100%) brightness(200%);
+}
