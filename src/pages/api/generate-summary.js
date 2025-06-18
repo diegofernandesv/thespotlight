@@ -1,4 +1,6 @@
 // pages/api/generate-summary.js
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -7,8 +9,7 @@ export default async function handler(req, res) {
   }
 
   const { answers } = req.body;
-  // const apiKey = process.env.OPENAI_API_KEY;
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
 
   if (!apiKey) {
     res.status(500).json({ error: 'Missing OpenAI API key' });
@@ -16,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   // Create prompt from answers
-const prompt = `
+  const prompt = `
 Summarize the following visitor's quiz answers in ONE short paragraph of MAXIMUM 100 characters.
 
 Here are the visitor's answers to a museum quiz:
