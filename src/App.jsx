@@ -21,7 +21,7 @@ import Consent from "./viewsFinalBooth/Consent";
 
 function App() {
   return (
-    <BrowserRouter basename="/thespotlight">
+    <BrowserRouter basename="/thespotlight/">
       <Routes>
         {/* Spotlight Section with Layout */}
         <Route path="/" element={<Layout />}>
