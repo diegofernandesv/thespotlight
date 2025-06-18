@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // Layout + Views
 import Layout from "./Layout";
@@ -15,33 +15,39 @@ import Start from "./viewsFinalBooth/Start";
 import QuestionView from "./viewsFinalBooth/QuestionView";
 import TicketEntry2 from "./viewsFinalBooth/TicketEntry.jsx";
 import TicketEntry from "./viewsOurNature/TicketEntry.jsx";
+import TakeAPhoto from "./viewsFinalBooth/TakeAPhoto";
+import SelectQuote from "./viewsFinalBooth/SelectQuote";
+import Consent from "./viewsFinalBooth/Consent";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter basename="/thespotlight">
       <Routes>
-        {/* Original Main Routes */}
-        <Route path="/thespotlight" element={<Layout />}>
+        {/* Spotlight Section with Layout */}
+        <Route path="/" element={<Layout />}>
           <Route index element={<MainScreen />} />
           <Route path="quiz" element={<QuizRoute />} />
         </Route>
 
-        {/* Additional Pages */}
-        <Route path="/" element={<OurNature />} />
+        {/* Main Pages */}
+        <Route path="/home" element={<OurNature />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/thank-you2" element={<ThankYouPage2 />} />
         <Route path="/map" element={<MapPage />} />
 
-        {/* Final Booth Routes */}
+        {/* Final Booth Views */}
         <Route path="/final-booth/start" element={<Start />} />
         <Route path="/final-booth/question-view" element={<QuestionView />} />
         <Route path="/ticket-entry2" element={<TicketEntry2 />} />
         <Route path="/ticket-entry" element={<TicketEntry />} />
+        <Route path="/photo" element={<TakeAPhoto />} />
+        <Route path="/quote" element={<SelectQuote />} />
+        <Route path="/consent" element={<Consent />} />
 
-        {/* Fallback */}
+        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
