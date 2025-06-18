@@ -4,9 +4,15 @@ import Continue from '../componentsf/buttons/Continue';
 import { supabase } from '../supabaseClient';
 import ProgressBar from '../componentsf/ProgressBar';
 
-// Dummy function for ChatGPT text generation (replace with real API call)
+// This is Step 4: real API call
 async function generateSummaryText(answers) {
-  return `Through your journey today, you've shown a curious mind, an open heart, and a thoughtful connection to the world around you. Each choice you made — from embracing randomness to reflecting on nature’s rhythms — reveals how you see yourself as part of something larger. You care about the balance between learning and feeling, between global challenges and personal responsibility.`;
+  const response = await fetch('/api/generate-summary', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers }),
+  });
+  const data = await response.json();
+  return data.summary || 'Could not generate summary.';
 }
 
 const Wrapped3 = () => {
@@ -60,4 +66,3 @@ const Wrapped3 = () => {
 };
 
 export default Wrapped3;
-
