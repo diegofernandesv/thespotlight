@@ -7,20 +7,22 @@ export default async function handler(req, res) {
   }
 
   const { answers } = req.body;
-  const apiKey = process.env.OPENAI_API_KEY;
+  // const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = "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";
   if (!apiKey) {
     res.status(500).json({ error: 'Missing OpenAI API key' });
     return;
   }
 
   // Create prompt from answers
-  const prompt = `
+const prompt = `
+Summarize the following visitor's quiz answers in ONE short paragraph of MAXIMUM 100 characters.
+
 Here are the visitor's answers to a museum quiz:
-${Object.values(answers)
-    .map((a, i) => `Q${i + 1}: ${a.question}\nA: ${a.answer}\n`)
-    .join('\n')}
-Write a warm, friendly summary of what their answers say about them.
-  `;
+${Object.values(answers).map((a, i) => `Q${i + 1}: ${a.question}\nA: ${a.answer}\n`).join('\n')}
+
+Focus on values like empathy, engagement, awareness, and authenticity. Make it warm and personal.
+`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

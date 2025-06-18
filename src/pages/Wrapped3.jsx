@@ -6,13 +6,23 @@ import ProgressBar from '../componentsf/ProgressBar';
 
 // This is Step 4: real API call
 async function generateSummaryText(answers) {
-  const response = await fetch('/api/generate-summary', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ answers }),
-  });
-  const data = await response.json();
-  return data.summary || 'Could not generate summary.';
+  try {
+    const response = await fetch('http://localhost:3001/api/generate-summary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers }),
+    });
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      return data.summary || 'Could not generate summary.';
+    } catch (jsonErr) {
+      // Not valid JSON, show server error message
+      return text.startsWith('The server') ? 'Server error: OpenAI API key is missing or misconfigured.' : 'Unexpected server error.';
+    }
+  } catch (err) {
+    return 'Failed to contact summary server.';
+  }
 }
 
 const Wrapped3 = () => {
