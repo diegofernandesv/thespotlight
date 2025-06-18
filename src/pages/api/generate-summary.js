@@ -8,7 +8,8 @@ export default async function handler(req, res) {
 
   const { answers } = req.body;
   // const apiKey = process.env.OPENAI_API_KEY;
-  const apiKey = "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";
+  const apiKey = process.env.OPENAI_API_KEY;
+
   if (!apiKey) {
     res.status(500).json({ error: 'Missing OpenAI API key' });
     return;
