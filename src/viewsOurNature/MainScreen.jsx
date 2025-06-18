@@ -20,7 +20,7 @@ const MainScreen = () => {
         if (stage === 1) {
             setStage(2);
         } else if (stage === 2) {
-            navigate("/thespotlight/quiz");
+            navigate("/quiz");
         }
     };
     return (
