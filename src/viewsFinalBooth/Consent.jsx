@@ -12,7 +12,7 @@ const Consent = () => {
         return (
             <div className={styles.wrapper}>
                 <h1>Thank you for your participation!</h1>
-                <ContinueBlack>Finish</ContinueBlack>
+                <ContinueBlack onClick={() => navigate("/final-booth/start")}>Finish</ContinueBlack>
             </div>
         );
     }
