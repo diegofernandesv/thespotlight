@@ -69,7 +69,7 @@ const Wrapped3 = () => {
         {loading ? 'Loading...' : summary}
       </div>
       <div className={styles.continueButton3}>
-        <Continue onClick={() => window.location.href = '/'}>Continue</Continue>
+        <Continue onClick={() => window.location.href = '/thespotlight/photoOption'}>Continue</Continue>
       </div>
     </div>
   );
