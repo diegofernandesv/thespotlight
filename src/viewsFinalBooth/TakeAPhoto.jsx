@@ -13,26 +13,20 @@ const TakeAPhoto = () => {
     const navigate = useNavigate();
     // Load photo from localStorage on mount
     useEffect(() => {
-        const storedPhoto = localStorage.getItem('capturedPhoto');
-        if (storedPhoto) {
-            setPhoto(storedPhoto);
-        }
+        // No need to load from localStorage
     }, []);
 
     const capturePhoto = async () => {
         const imageSrc = webcamRef.current.getScreenshot();
         setPhoto(imageSrc);
-        localStorage.setItem('capturedPhoto', imageSrc);
-    
+
         // UPLOAD TO SUPABASE
         const publicUrl = await uploadPhotoToSupabase(imageSrc);
-    
+
         // Update images jsonb column in ticket_table
         if (publicUrl) {
-            // Get ticket_number from localStorage
             let ticketNumber = localStorage.getItem('ticket_number');
             if (ticketNumber) ticketNumber = parseInt(ticketNumber, 10);
-            console.log('Attempting to save image for ticket_number:', ticketNumber, 'image URL:', publicUrl);
             if (ticketNumber && !isNaN(ticketNumber)) {
                 const result = await updateTicketImages(ticketNumber, publicUrl);
                 console.log('updateTicketImages result:', result);

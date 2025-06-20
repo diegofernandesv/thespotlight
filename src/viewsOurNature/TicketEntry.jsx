@@ -88,7 +88,8 @@ const TicketEntry = ({
       .insert([{ 
         ticket_number: ticketNumberAsInt,
         exhibition_id: "Our Nature",
-        answers: initialAnswers
+        answers: initialAnswers,
+        created_at: new Date().toISOString()
       }]);
 
     if (insertError) {

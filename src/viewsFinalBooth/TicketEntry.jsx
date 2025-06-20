@@ -116,7 +116,8 @@ const TicketEntry = ({
         .insert([{ 
           ticket_number: ticketNumberAsInt,
           exhibition_id: ["Final Booth"],
-          answers: initialAnswers
+          answers: initialAnswers,
+          quote: null
         }]);
 
       if (insertError) {

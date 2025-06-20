@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./SelectQuote.module.css";
 import arrowIcon from "../assets/arrow_no_tail.svg";
 import ContinueBlack from "../components/buttons/ContinueBlack";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 const quotesData = [
   {
@@ -141,13 +142,33 @@ const quotesData = [
 ];
 
 const SelectQuote = () => {
-    const photo = localStorage.getItem("capturedPhoto");
+    const location = useLocation();
+    const photo = location.state?.photo || null;
 
     const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
     const [selectedOption1, setSelectedOption1] = useState("");
     const [selectedOption2, setSelectedOption2] = useState("");
     const navigate = useNavigate();
     const { quote, options1, options2 } = quotesData[currentQuoteIndex];
+    const [photoUrl, setPhotoUrl] = useState(null);
+
+    useEffect(() => {
+      const fetchPhoto = async () => {
+        let ticketNumber = localStorage.getItem('ticket_number');
+        if (ticketNumber) ticketNumber = parseInt(ticketNumber, 10);
+        if (ticketNumber && !isNaN(ticketNumber)) {
+          const { data, error } = await supabase
+            .from('ticket_table')
+            .select('images')
+            .eq('ticket_number', ticketNumber)
+            .single();
+          if (!error && data && Array.isArray(data.images) && data.images.length > 0) {
+            setPhotoUrl(data.images[data.images.length - 1]); // Use the latest image
+          }
+        }
+      };
+      fetchPhoto();
+    }, []);
 
     // Function to replace the blanks in the quote with selected options
     const renderQuote = () => {
@@ -195,9 +216,40 @@ const SelectQuote = () => {
     setSelectedOption2("");
     };
 
+    const handleContinue = async () => {
+      // Get ticket number from localStorage
+      let ticketNumber = localStorage.getItem('ticket_number');
+      if (ticketNumber) ticketNumber = parseInt(ticketNumber, 10);
+
+      // Get the rendered quote
+      const fullQuote = localStorage.getItem("renderedQuote");
+
+      // Prepare JSON object
+      const quoteData = {
+        quote: fullQuote,
+        option1: selectedOption1,
+        option2: selectedOption2,
+        quoteIndex: currentQuoteIndex
+      };
+
+      // Save to Supabase
+      if (ticketNumber && fullQuote) {
+        const { error } = await supabase
+          .from('ticket_table')
+          .update({ quote: quoteData })
+          .eq('ticket_number', ticketNumber);
+
+        if (error) {
+          console.error("Error saving quote to Supabase:", error);
+        }
+      }
+
+      navigate("/consent");
+    };
+
     return (
         <div className={styles.wrapper}>
-            <img src={photo} alt="Captured" className={styles.image} />
+            <img src={photoUrl} alt="Captured" className={styles.image} />
             <div className={styles.quoteSelectorWrapper}>
             <h3>Select a quote</h3>
             <div className={styles.quoteSelector}>
@@ -241,7 +293,7 @@ const SelectQuote = () => {
             </div>
             </div>
             <div className={styles.continueBtnWrapper}>
-            <ContinueBlack onClick={() => navigate("/consent")}></ContinueBlack>
+            <ContinueBlack onClick={() => navigate("/consent", { state: { photo } })}></ContinueBlack>
             </div>
         </div>
     );

@@ -293,16 +293,16 @@ export async function uploadPhotoToSupabase(base64Image) {
     const blob = await res.blob();
     // Generate a unique filename
     const fileName = `photo_${Date.now()}.png`;
-    // Upload to Supabase Storage (bucket: 'photos')
+    // Upload to Supabase Storage (bucket: 'images')
     const { data, error } = await supabase.storage
-      .from('photos')
+      .from('images')
       .upload(fileName, blob, { contentType: 'image/png', upsert: false });
     if (error) {
       console.error('Error uploading photo to Supabase Storage:', error);
       return null;
     }
     // Get public URL
-    const { data: publicUrlData } = supabase.storage.from('photos').getPublicUrl(fileName);
+    const { data: publicUrlData } = supabase.storage.from('images').getPublicUrl(fileName);
     return publicUrlData?.publicUrl || null;
   } catch (err) {
     console.error('Unexpected error uploading photo:', err);

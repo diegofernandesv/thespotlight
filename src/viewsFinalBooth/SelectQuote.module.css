@@ -76,6 +76,7 @@ body {
     font-size: 20px;
     padding: 15px 10px 15px 24px;
     font-weight: 400;
+    font-family: "Neue Montreal", sans-serif;
 }
 .wrapper .quoteSelectorWrapper .optionsWrapper ul li:nth-child(odd) {
     background-color: #F4F4F4; 

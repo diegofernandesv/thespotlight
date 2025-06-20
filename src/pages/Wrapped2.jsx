@@ -12,40 +12,35 @@ const Wrapped2 = () => {
 
   useEffect(() => {
     const fetchTimeSpent = async () => {
-      // Get ticket number from localStorage
-      const ticketNumber = localStorage.getItem('ticket_number');
-      if (!ticketNumber) {
-        console.warn('No ticket number found in localStorage.');
-        return;
-      }
-      const { data, error } = await supabase
+      // Get the most recent ticket from Supabase
+      const { data: ticketData, error: ticketError } = await supabase
         .from('ticket_table')
-        .select('answers')
-        .eq('ticket_number', ticketNumber)
-        .single();
-
-      if (error) {
-        console.error('Error fetching ticket:', error);
+        .select('ticket_number, answers, created_at')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (ticketError) {
+        console.error('Error fetching most recent ticket:', ticketError);
         return;
       }
-
-      const answers = data.answers;
-
+      if (!ticketData || ticketData.length === 0) {
+        console.warn('No tickets found in Supabase.');
+        return;
+      }
+      const ticket = ticketData[0];
+      const answers = ticket.answers;
+      // Use answers from the most recent ticket
       if (answers?.Q1?.timestamp && answers?.Q12?.timestamp) {
         const start = new Date(answers.Q1.timestamp);
-        const end = new Date(answers.Q12.timestamp);
-
+        const end = new Date(answers.Q12?.timestamp);
         const durationMs = end - start;
         const durationSec = Math.floor(durationMs / 1000);
         const minutes = Math.floor(durationSec / 60);
         const seconds = durationSec % 60;
-
         setTimeSpent({ minutes, seconds });
       } else {
         console.warn('Timestamps for Q1 or Q12 are missing.');
       }
     };
-
     fetchTimeSpent();
   }, []);
 
