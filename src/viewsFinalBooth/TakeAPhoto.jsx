@@ -3,6 +3,7 @@ import Webcam from "react-webcam";
 import ContinueBlack from "../components/buttons/ContinueBlack";
 import styles from "./TakeAPhoto.module.css";
 import { useNavigate } from "react-router-dom";
+import { supabase, uploadPhotoToSupabase, updateTicketImages } from "../supabaseClient";
 
 const TakeAPhoto = () => {
     const webcamRef = useRef(null);
@@ -18,11 +19,29 @@ const TakeAPhoto = () => {
         }
     }, []);
 
-    const capturePhoto = () => {
+    const capturePhoto = async () => {
         const imageSrc = webcamRef.current.getScreenshot();
         setPhoto(imageSrc);
-        localStorage.setItem('capturedPhoto', imageSrc); // Add supabase (but don't erase this) here this and on the PhotoFilters component make it erase the local storage one.
+        localStorage.setItem('capturedPhoto', imageSrc);
+    
+        // UPLOAD TO SUPABASE
+        const publicUrl = await uploadPhotoToSupabase(imageSrc);
+    
+        // Update images jsonb column in ticket_table
+        if (publicUrl) {
+            // Get ticket_number from localStorage
+            let ticketNumber = localStorage.getItem('ticket_number');
+            if (ticketNumber) ticketNumber = parseInt(ticketNumber, 10);
+            console.log('Attempting to save image for ticket_number:', ticketNumber, 'image URL:', publicUrl);
+            if (ticketNumber && !isNaN(ticketNumber)) {
+                const result = await updateTicketImages(ticketNumber, publicUrl);
+                console.log('updateTicketImages result:', result);
+            } else {
+                console.warn('No valid ticket_number found in localStorage.');
+            }
+        }
     };
+    
 
     const retakePhoto = () => {
         setPhoto(null);

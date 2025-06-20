@@ -102,6 +102,7 @@ const TicketEntry = ({
 
         console.log("✅ Successfully updated ticket:", ticketNumberAsInt);
         setLoading(false);
+        localStorage.setItem('ticket_number', ticketNumberAsInt);
         navigate("/final-booth/question-view", { state: { ticket: ticketNumberAsInt } });
         return;
       }
@@ -132,6 +133,7 @@ const TicketEntry = ({
       }
 
       setLoading(false);
+      localStorage.setItem('ticket_number', ticketNumberAsInt);
       navigate("/final-booth/question-view", { state: { ticket: ticketNumberAsInt } });
     } catch (error) {
       console.error("Unexpected error:", error);

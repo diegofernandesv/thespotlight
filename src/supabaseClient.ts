@@ -280,3 +280,69 @@ export async function updateExhibitionId(
     return false;
   }
 }
+
+/**
+ * Uploads a base64 image to Supabase Storage and returns the public URL.
+ * @param {string} base64Image - The base64 image string (data URL)
+ * @returns {Promise<string|null>} - The public URL of the uploaded image or null on failure
+ */
+export async function uploadPhotoToSupabase(base64Image) {
+  try {
+    // Convert base64 to Blob
+    const res = await fetch(base64Image);
+    const blob = await res.blob();
+    // Generate a unique filename
+    const fileName = `photo_${Date.now()}.png`;
+    // Upload to Supabase Storage (bucket: 'photos')
+    const { data, error } = await supabase.storage
+      .from('photos')
+      .upload(fileName, blob, { contentType: 'image/png', upsert: false });
+    if (error) {
+      console.error('Error uploading photo to Supabase Storage:', error);
+      return null;
+    }
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage.from('photos').getPublicUrl(fileName);
+    return publicUrlData?.publicUrl || null;
+  } catch (err) {
+    console.error('Unexpected error uploading photo:', err);
+    return null;
+  }
+}
+
+/**
+ * Updates the images jsonb column for a ticket, appending the new image URL.
+ * @param {number} ticket_number - The ticket number
+ * @param {string} imageUrl - The public URL of the image
+ * @returns {Promise<boolean>} - True if successful
+ */
+export async function updateTicketImages(ticket_number, imageUrl) {
+  if (!ticket_number || !imageUrl) return false;
+  try {
+    // Get current images array
+    const { data, error } = await supabase
+      .from('ticket_table')
+      .select('images')
+      .eq('ticket_number', ticket_number)
+      .single();
+    if (error) {
+      console.error('Error fetching current images:', error);
+      return false;
+    }
+    let imagesArr = Array.isArray(data?.images) ? data.images : [];
+    imagesArr.push(imageUrl);
+    // Update the images column
+    const { error: updateError } = await supabase
+      .from('ticket_table')
+      .update({ images: imagesArr })
+      .eq('ticket_number', ticket_number);
+    if (updateError) {
+      console.error('Error updating images column:', updateError);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Unexpected error updating images:', err);
+    return false;
+  }
+}
