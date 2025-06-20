@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ContinueBlack from "../components/buttons/ContinueBlack";
 import styles from "./PhotoFilters.module.css";
 
@@ -9,11 +9,32 @@ import mountains from "../assets/bg_images/mountains.png";
 import safari from "../assets/bg_images/safari.png";
 import winter from "../assets/bg_images/winter.png";
 import museumLogo from "../assets/museum_logo.png";
+import { supabase } from "../supabaseClient";
 
 const PhotoFilters = () => {
-  const photo = localStorage.getItem("capturedPhoto");
+  const [photo, setPhoto] = useState(null);
+  const [loading, setLoading] = useState(true);
   const quote = localStorage.getItem('renderedQuote');
   const [selectedBg, setSelectedBg] = useState(0);
+
+  useEffect(() => {
+    const fetchPhoto = async () => {
+      let ticketNumber = localStorage.getItem('ticket_number');
+      if (ticketNumber) ticketNumber = parseInt(ticketNumber, 10);
+      if (ticketNumber && !isNaN(ticketNumber)) {
+        const { data, error } = await supabase
+          .from('ticket_table')
+          .select('images')
+          .eq('ticket_number', ticketNumber)
+          .single();
+        if (!error && data && Array.isArray(data.images) && data.images.length > 0) {
+          setPhoto(data.images[data.images.length - 1]); // Use the latest image
+        }
+      }
+      setLoading(false);
+    };
+    fetchPhoto();
+  }, []);
 
   const backgroundImages = [
     { image: winter, color: "#439FE0" },
@@ -37,7 +58,11 @@ const PhotoFilters = () => {
       }}
     >
       <div className={styles.cardWrapper}>
-        <img src={photo} alt="User Photo" />
+        {loading ? (
+          <p>Loading image...</p>
+        ) : (
+          <img src={photo} alt="User Photo" />
+        )}
         <h2
           className={styles.title}
           style={{ color: selected ? selected.color : "#000" }}

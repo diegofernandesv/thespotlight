@@ -293,7 +293,7 @@ const SelectQuote = () => {
             </div>
             </div>
             <div className={styles.continueBtnWrapper}>
-            <ContinueBlack onClick={() => navigate("/consent", { state: { photo } })}></ContinueBlack>
+            <ContinueBlack onClick={handleContinue}></ContinueBlack>
             </div>
         </div>
     );

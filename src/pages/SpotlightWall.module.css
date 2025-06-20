@@ -1,0 +1,57 @@
+.wallGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  padding: 32px;
+  background: #f7f7f7;
+}
+
+.wallCard {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 16px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.wallCard:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+}
+
+.wallImage {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  background: #eaeaea;
+}
+
+.wallQuote {
+  font-size: 1.1rem;
+  color: #222;
+  text-align: center;
+  margin: 0;
+  font-family: 'Neue Montreal', sans-serif;
+  font-weight: 500;
+}
+
+@media (max-width: 700px) {
+  .wallCard {
+    width: 90vw;
+    min-width: 0;
+  }
+  .wallImage {
+    height: 50vw;
+    min-height: 180px;
+  }
+  .wallGrid {
+    gap: 16px;
+    padding: 8px;
+  }
+} 
