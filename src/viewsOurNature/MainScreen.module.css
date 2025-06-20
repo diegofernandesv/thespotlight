@@ -31,7 +31,7 @@
 }
 .content h2 {
     color: #FFF;
-    font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+    font-family: "Urbanist", sans-serif;
     font-size: 36.544px;
     font-style: normal;
     font-weight: 600;
@@ -39,19 +39,20 @@
 }
 .content h1 {
     color: #FFF;
-    font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+    font-family: "Urbanist", sans-serif;
     font-size: 125.389px;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 600;
 
 }
 .content p {
     color: #FFF;
-    font-family: "Urbanist", -apple-system, Roboto, Helvetica, sans-serif;
+    font-family: "Neue Montreal", sans-serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 200;
     line-height: 40px;
+    text-align: left;
 
 }
 .content .headingsWrapper {

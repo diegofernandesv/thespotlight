@@ -23,6 +23,7 @@
 
 .exhibitionCard {
   position: relative;
+  width: 161.063px;
 }
 
 .exhibitionCard:first-child .exhibitionImage {
@@ -45,6 +46,7 @@
 }
 
 .exhibitionName {
+  width: 161.03px;
   margin-top: 30px;
   font-size: 20px;
   font-family: "Neue Montreal", sans-serif;
