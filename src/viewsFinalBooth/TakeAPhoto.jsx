@@ -21,7 +21,7 @@ const TakeAPhoto = () => {
     const capturePhoto = () => {
         const imageSrc = webcamRef.current.getScreenshot();
         setPhoto(imageSrc);
-        localStorage.setItem('capturedPhoto', imageSrc);
+        localStorage.setItem('capturedPhoto', imageSrc); // Add supabase (but don't erase this) here this and on the PhotoFilters component make it erase the local storage one.
     };
 
     const retakePhoto = () => {
