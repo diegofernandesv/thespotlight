@@ -31,7 +31,7 @@ const ThankYouPage2 = ({
   };
 
   const handleContinue = () => {
-    navigate("/map"); // Ensure this navigates to the Map Page
+    navigate("/wrapped"); // Ensure this navigates to the Wrapped Page
   };
 
   return (

@@ -20,6 +20,9 @@ import SelectQuote from "./viewsFinalBooth/SelectQuote";
 import Consent from "./viewsFinalBooth/Consent";
 import PhotoFilters from "./viewsFinalBooth/PhotoFilters.jsx";
 import PhotoOption from "./viewsFinalBooth/PhotoOption.jsx";
+import Wrapped from "./pages/Wrapped.jsx";
+import Wrapped2 from "./pages/Wrapped2.jsx";
+import Wrapped3 from "./pages/Wrapped3.jsx";
 
 function App() {
   return (
@@ -47,6 +50,9 @@ function App() {
         <Route path="/consent" element={<Consent />} />
         <Route path="/filters" element={<PhotoFilters />} />
         <Route path="/photoOption" element={<PhotoOption />} />
+        <Route path="/wrapped" element={<Wrapped />} />
+        <Route path="/wrapped2" element={<Wrapped2 />} />
+        <Route path="/wrapped3" element={<Wrapped3 />} />
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" replace />} />
