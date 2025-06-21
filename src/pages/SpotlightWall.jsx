@@ -2,6 +2,94 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import styles from "./SpotlightWall.module.css";
 
+const PLACEHOLDER_PORTRAITS = [
+  {
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    quote: "I stand up for Clean air & water because small actions create big ripples."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    quote: "Endangered species matter to me because a balanced planet benefits everyone."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/45.jpg",
+    quote: "The world needs more Awareness because it drives positive change."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/65.jpg",
+    quote: "Forests matter to me because they support our well-being."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/51.jpg",
+    quote: "The world needs more Empathy because we protect what we understand."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/68.jpg",
+    quote: "Coral reefs matter to me because they hold solutions for the future."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/61.jpg",
+    quote: "Biodiversity matters to me because we learn from nature's resilience."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/34.jpg",
+    quote: "The world needs more Curiosity because nature thrives when we care."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/12.jpg",
+    quote: "I stand up for Wildlife protection because the planet gives, we must give back."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/12.jpg",
+    quote: "I stand up for Clean air & water because small actions create big ripples."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/22.jpg",
+    quote: "The world needs more Empathy because we protect what we understand."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/22.jpg",
+    quote: "I stand up for Clean air & water because small actions create big ripples."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/33.jpg",
+    quote: "Forests matter to me because they support our well-being."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/33.jpg",
+    quote: "The world needs more Awareness because it drives positive change."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/34.jpg",
+    quote: "Coral reefs matter to me because they hold solutions for the future."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/44.jpg",
+    quote: "Biodiversity matters to me because we learn from nature's resilience."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/45.jpg",
+    quote: "The world needs more Curiosity because nature thrives when we care."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/65.jpg",
+    quote: "I stand up for Wildlife protection because the planet gives, we must give back."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/women/51.jpg",
+    quote: "I stand up for Clean air & water because small actions create big ripples."
+  },
+  {
+    image: "https://randomuser.me/api/portraits/men/68.jpg",
+    quote: "The world needs more Empathy because we protect what we understand."
+  },
+  // ...add more as needed
+];
+
+const NUM_COLUMNS = 7;
+const NUM_ROWS = 6; // adjust as needed for your wall height
+const TOTAL_CARDS = NUM_COLUMNS * NUM_ROWS;
+
 const SpotlightWall = () => {
   const [entries, setEntries] = useState([]);
 
@@ -14,9 +102,9 @@ const SpotlightWall = () => {
         .not("images", "is", null)
         .not("quote", "is", null);
 
-      let filtered = [];
+      let realEntries = [];
       if (!error && data) {
-        filtered = data
+        realEntries = data
           .filter(
             (row) =>
               Array.isArray(row.images) &&
@@ -30,36 +118,33 @@ const SpotlightWall = () => {
           }));
       }
 
-      // If no real entries, add some random placeholders
-      if (filtered.length === 0) {
-        filtered = [
-          {
-            image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=400&h=400&q=80",
-            quote: "“I stand up for animal welfare because nature has no voice but we do.”"
-          },
-          {
-            image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=400&h=400&q=80",
-            quote: "“Biodiversity matters to me because every species has value.”"
-          },
-          {
-            image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=facearea&w=400&h=400&q=80",
-            quote: "“The world needs more empathy because it builds lasting impact.”"
-          },
-        ];
+      // Fill up to TOTAL_CARDS with placeholders
+      let allEntries = [...realEntries];
+      let placeholderIndex = 0;
+      while (allEntries.length < TOTAL_CARDS) {
+        allEntries.push(PLACEHOLDER_PORTRAITS[placeholderIndex % PLACEHOLDER_PORTRAITS.length]);
+        placeholderIndex++;
       }
-
-      setEntries(filtered);
+      setEntries(allEntries);
     };
-
     fetchEntries();
   }, []);
 
+  // Arrange entries into columns for column-major order
+  const columns = Array.from({ length: NUM_COLUMNS }, (_, colIdx) =>
+    entries.filter((_, idx) => idx % NUM_COLUMNS === colIdx)
+  );
+
   return (
-    <div className={styles.wallGrid}>
-      {entries.map((entry, idx) => (
-        <div key={idx} className={styles.wallCard}>
-          <img src={entry.image} alt="Spotlight" className={styles.wallImage} />
-          <p className={styles.wallQuote}>{entry.quote}</p>
+    <div className={styles.wallGrid} style={{ gridTemplateColumns: `repeat(${NUM_COLUMNS}, 1fr)` }}>
+      {columns.map((col, colIdx) => (
+        <div key={colIdx} className={styles.wallColumn}>
+          {col.map((entry, rowIdx) => (
+            <div key={rowIdx} className={styles.wallCard}>
+              <img src={entry.image} alt="Spotlight" className={styles.wallImage} />
+              <p className={styles.wallQuote}>{entry.quote}</p>
+            </div>
+          ))}
         </div>
       ))}
     </div>
