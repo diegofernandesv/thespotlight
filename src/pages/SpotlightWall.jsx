@@ -86,7 +86,7 @@ const PLACEHOLDER_PORTRAITS = [
   // ...add more as needed
 ];
 
-const NUM_COLUMNS = 7;
+const NUM_COLUMNS = 5;
 const NUM_ROWS = 6; // adjust as needed for your wall height
 const TOTAL_CARDS = NUM_COLUMNS * NUM_ROWS;
 
@@ -136,17 +136,26 @@ const SpotlightWall = () => {
   );
 
   return (
-    <div className={styles.wallGrid} style={{ gridTemplateColumns: `repeat(${NUM_COLUMNS}, 1fr)` }}>
-      {columns.map((col, colIdx) => (
-        <div key={colIdx} className={styles.wallColumn}>
-          {col.map((entry, rowIdx) => (
-            <div key={rowIdx} className={styles.wallCard}>
-              <img src={entry.image} alt="Spotlight" className={styles.wallImage} />
-              <p className={styles.wallQuote}>{entry.quote}</p>
-            </div>
-          ))}
-        </div>
-      ))}
+    <div className={styles.wallGrid}>
+      {columns.map((col, colIdx) => {
+        const variation = Math.random() * 4 - 2; // ±2s
+        const scrollDuration = 120 + variation;
+
+        return (
+          <div
+            key={colIdx}
+            className={styles.wallColumn}
+            style={{ animationDuration: `${scrollDuration}s` }}
+          >
+            {[...col, ...col].map((entry, rowIdx) => (
+              <div key={rowIdx} className={styles.wallCard}>
+                <img src={entry.image} alt="Spotlight" className={styles.wallImage} />
+                <p className={styles.wallQuote}>{entry.quote}</p>
+              </div>
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 };

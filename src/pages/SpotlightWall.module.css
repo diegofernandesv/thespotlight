@@ -1,90 +1,89 @@
-*{
-    border: 1px solid red;
-}
+
 .wallGrid {
-    display: grid;
-    gap: 20px;
-    background-color: #f5f5f5;
-    padding: 0px;
-    width: 256px;
+  display: flex;
+  gap: 20px;
+  background-color: white;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  overflow-y: hidden;
+}
+
+.wallColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation-name: scrollUp;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.wallCard {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.wallImage {
+  width: 256px;
+  height: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+}
+
+.wallQuote {
+  padding: 28px 20px 20px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+  font-weight: 400;
+  text-align: left;
+  width: 256px;
+}
+
+/* Scroll animation */
+@keyframes scrollUp {
+  0% {
+    transform: translateY(0%);
   }
-  
-  .wallColumn {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  100% {
+    transform: translateY(-50%);
   }
-  
-  .wallCard {
-    background: white;
-    border-radius: 12px;
-    padding: 0;
-    transition: transform 0.2s ease;
-    overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 1800px) {
+  .wallGrid {
+    gap: 16px;
   }
-  
-  
+}
+
+@media (max-width: 1200px) {
   .wallImage {
-    width: 256px;
-    height: 320px;
-    object-fit: cover;
-    display: block;
+    height: 280px;
   }
-  
+}
+
+@media (max-width: 900px) {
+  .wallImage {
+    height: 240px;
+  }
+
   .wallQuote {
-    padding: 28px 20px 20px;
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.4;
-    color: #333;
-    font-weight: 400;
-    text-align: left;
-    width: 256px;
+    font-size: 13px;
+    padding: 20px 15px 15px;
   }
-  
-  /* Responsive adjustments */
-  @media (max-width: 1800px) {
-    .wallGrid {
-      grid-template-columns: repeat(6, 1fr) !important;
-    }
+}
+
+@media (max-width: 600px) {
+  .wallImage {
+    height: 200px;
   }
-  
-  @media (max-width: 1500px) {
-    .wallGrid {
-      grid-template-columns: repeat(5, 1fr) !important;
-    }
-  }
-  
-  @media (max-width: 1200px) {
-    .wallGrid {
-      grid-template-columns: repeat(4, 1fr) !important;
-    }
-  }
-  
-  @media (max-width: 900px) {
-    .wallGrid {
-      grid-template-columns: repeat(3, 1fr) !important;
-    }
-    
-    .wallImage {
-      width: 100%;
-      height: 280px;
-    }
-  }
-  
-  @media (max-width: 600px) {
-    .wallGrid {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 15px;
-      padding: 20px;
-    }
-    
-    .wallImage {
-      height: 240px;
-    }
-    
-    .wallQuote {
-      padding: 20px 15px 15px;
-      font-size: 13px;
-    }
-  }
+}
+
