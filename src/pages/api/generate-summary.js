@@ -18,12 +18,20 @@ export default async function handler(req, res) {
 
   // Create prompt from answers
   const prompt = `
-Summarize the following visitor's quiz answers in ONE short paragraph of MAXIMUM 100 characters.
+Write a warm, friendly, and personal summary of what these answers reveal about the visitor's values, attitudes, and reflections. DO NOT EXCEED 400 CHARACTERS
 
 Here are the visitor's answers to a museum quiz:
 ${Object.values(answers).map((a, i) => `Q${i + 1}: ${a.question}\nA: ${a.answer}\n`).join('\n')}
 
-Focus on values like empathy, engagement, awareness, and authenticity. Make it warm and personal.
+Your summary must:
+- Talk to them in the second person.
+- Use a casual, serious, respectful andconversational, positive tone.
+- Focus on what makes the visitor's perspective unique and thoughtful.
+- Avoid generic feedback—connect each insight to specific answers.
+- Keep paragraphs short (max 2–3 sentences each, about 150 characters per paragraph) for easy reading on screens.
+- Limit the summary to 3–4 short paragraphs, so it's easy to scan and doesn't feel overwhelming.
+
+Focus on values like empathy, engagement, awareness, and authenticity.
 `;
 
   try {

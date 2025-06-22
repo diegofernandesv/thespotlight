@@ -24,6 +24,7 @@ import Wrapped from "./pages/Wrapped.jsx";
 import Wrapped2 from "./pages/Wrapped2.jsx";
 import Wrapped3 from "./pages/Wrapped3.jsx";
 import SpotlightWall from "./pages/SpotlightWall.jsx";
+import Video from "./pages/Video.jsx";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
         <Route path="/wrapped2" element={<Wrapped2 />} />
         <Route path="/wrapped3" element={<Wrapped3 />} />
         <Route path="/spotlight-wall" element={<SpotlightWall />} />
+        <Route path="/video" element={<Video />} />
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" replace />} />
