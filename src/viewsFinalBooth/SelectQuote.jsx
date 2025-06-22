@@ -144,7 +144,7 @@ const quotesData = [
 const SelectQuote = () => {
     const location = useLocation();
     const photo = location.state?.photo || null;
-
+    const capturedPhoto = localStorage.getItem('capturedPhoto');
     const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
     const [selectedOption1, setSelectedOption1] = useState("");
     const [selectedOption2, setSelectedOption2] = useState("");
@@ -249,7 +249,7 @@ const SelectQuote = () => {
 
     return (
         <div className={styles.wrapper}>
-            <img src={photoUrl} alt="Captured" className={styles.image} />
+            <img src={capturedPhoto} alt="Captured" className={styles.image} />
             <div className={styles.quoteSelectorWrapper}>
             <h3>Select a quote</h3>
             <div className={styles.quoteSelector}>

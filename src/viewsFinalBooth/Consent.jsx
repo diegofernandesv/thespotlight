@@ -38,7 +38,7 @@ const Consent = () => {
                 console.log('Consent updated successfully for ticket', ticketNumber);
             }
         }
-        navigate("/spotlight-wall");
+        navigate("/filters");
     };
 
     if (declined) {

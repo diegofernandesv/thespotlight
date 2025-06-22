@@ -19,7 +19,7 @@ const TakeAPhoto = () => {
     const capturePhoto = async () => {
         const imageSrc = webcamRef.current.getScreenshot();
         setPhoto(imageSrc);
-
+        localStorage.setItem('capturedPhoto', imageSrc);
         // UPLOAD TO SUPABASE
         const publicUrl = await uploadPhotoToSupabase(imageSrc);
 
